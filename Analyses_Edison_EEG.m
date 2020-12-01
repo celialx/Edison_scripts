@@ -179,4 +179,4 @@ save(strcat(SavePath,'Edison_EEG'), 'Edison_EEG');
 
 % Lauch Behaviour Analyses if desired
 
-Analyses_Edison_Behaviour;
+%Analyses_Edison_Behaviour;

@@ -4,7 +4,6 @@
 
 % The script "Analyses_Edison_EEG" need to be run before this one
 % Think about adding mean PVT post for 84RD (bug script)
-% Add this for github
 
 clear all; close all; clc;
 
