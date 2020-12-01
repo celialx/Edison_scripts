@@ -1,0 +1,104 @@
+FUNCTION REFERENCE MSTATS
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mstats_exampledata.mat
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+contains example data for cells2vectors.m
+NOTE: examples are to be found in the help text associated with each function.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+cell2vectors.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function accepts a one-dimensional cell array in which each cell contains numbers.
+It concatenates all those numbers into one vector and constructs a second vector which
+indicates the identity of each number's cell. So it's not really a statistics function, but
+it comes quite handy when one wants to use e.g. kruskalwallis.m or anova1.m.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mbinocof.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function computes the binomial coefficient for values of n up to 170.
+Sadly, this code became obsolete when The Mathworks introduced nchoosek.m.
+
+The binomial coefficient is the number of ways of picking k unordered outcomes from n possibilities.
+This can be nicely illustrated with pizza toppings. A local pizza service offers 31 different toppings.
+Suppose you want to have a pizza with six (different!) toppings.
+Type binocof(31,6) (or nchoosek(31,6)). The choice will be hard:
+There are n!/(k!(n-k)!) = 31!/(6!(31-6)!) = 736,281 different pizzas to choose from.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mbinoform.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function uses the binomial formula to compute the exact probability of k occurrences of event A in n trials.
+
+A classic example would be coin tossing. Given you have a fair coin, what is the probability of observing
+5 times heads when the coin is tossed 10 times?
+binoform(10,5,0.5) = 0.2461
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mbinotest.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function computes one- or two-tailed p-values from a binomial test.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mcompregslopes.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function compares the slopes of two regression lines to see whether they are significantly different.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+meta2.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Computes effect size index eta squared.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mfishertest.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Fisher's exact test is used in the analysis of contingency tables. Usually, it is employed when 
+sample sizes are small, but it is valid for all sample sizes, and given enough computer power, 
+it is to be preferred over approximation tests.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mrci.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Computes (and optionally plots) a confidence interval for a Pearson correlation coefficient.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mrddiffci.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Computes a confidence interval for THE DIFFERENCE OF TWO ***DEPENDENT*** Pearson correlation coefficients.
+Also spits out the p-value for the difference.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+mridiffci.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Computes a confidence interval for THE DIFFERENCE OF TWO ***INDEPENDENT*** Pearson correlation coefficients.
+Also spits out the p-value for the difference.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+msemipartialcorr.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Function computes the semipartial correlation between y and x1 when x2 has been partialed out from x1.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+msep.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Simply computes the standard error of a proportion, sqrt((p.*(1-p))./n).
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+msepd.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Computes the standard error of the difference of two proportions, and also returns the corresponding z- and p-values.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+sem.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Simply computes the standard error of the mean, SEM = SD(x)/sqrt(numel(x)).
+Works for vectors and matrices, just like var.m and std.m.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+test_mstat_funcs.m
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+A script for testing / validating some of the mstat functions.
+
+-----------------
+For any further questions or bug reports or wish lists, please contact me under neuron1@gmx.net.
