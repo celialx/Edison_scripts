@@ -10,7 +10,7 @@ decalage = 1; % for subplot, shift y label to the left (away from the axis)
 
 % Number of subjects in each vigilance state
 subplot(1,2,1);
-Var = {Nb_WakeAll, Nb_N1All,Nb_N2All};
+Var = {Nb_Wake, Nb_N1,Nb_N2};
 
 for i =1:3
     
@@ -29,8 +29,8 @@ Design;
 
 subplot(1,2,2)
 
-timeN1_AASM =(Data.NbEpochsN1Edison(N1All)*30)/60; % Conventional scoring
-timeN1_Micro_N1=(Data.timeN1Edison(N1All))/60; % BERN scoring
+timeN1_AASM =(Data.NbEpochsN1Edison(N1)*30)/60; % Conventional scoring
+timeN1_Micro_N1=(Data.timeN1Edison(N1))/60; % BERN scoring
 timeN1_Micro_Wake = (Data.timeN1Edison(WakeAll))/60;
 
 gyt_PiratePlot(1,timeN1_AASM,0.3,2,'y',N1color,'y') % violin plot
