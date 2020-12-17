@@ -10,11 +10,12 @@ load([TablePath, 'All_Data']);
 path_local ='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
 path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
 path_localsleep='D:\MATLAB\Toolbox\wanderIM\localsleep\';
+addpath(path_fieldtrip);
 addpath(path_localsleep);
 addpath(genpath(path_LSCPtools));
 
 %If you desire to print figure, set this to 1
-SaveFig = 0;
+SaveFig = 1;
 
 %-----------------------------------------------------------------
 % Initialisation
@@ -149,7 +150,6 @@ AhaMoment = Data.AhaMoment(SolPost);% (restreined here to post solvers)
 % Is there a difference btw vigilance states?
 AhaMoment_Wake = Data.AhaMoment(Data.InsightPost==1 & WakeAll);
 AhaMoment_N1 = Data.AhaMoment(Data.InsightPost==1 & N1All);
-AhaMoment_N2 = Data.AhaMoment(Data.InsightPost==1 & N2All);
 
 %-----------------------------------------------------------------
 % Analyses on implicit task

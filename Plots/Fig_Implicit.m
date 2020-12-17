@@ -16,8 +16,8 @@ for i =1:2
     N = length(Var{i+1}); X = linspace(0,pi*3,1000); C = linspecer(N);
     
     if i ==1
-        title('Solvers')
-        
+            title('Solvers', 'color', verteau);
+        hold on
         for ii=1:N
             plot([Var{i}(ii), Var{i+1}(ii)]','LineWidth', 2, 'color', C(ii,:), 'linestyle', '--')
             hold on;
@@ -27,8 +27,8 @@ for i =1:2
         sigstar([1 2], p, [],higherBar);
         
     elseif i ==2
-        title('Non Solvers')
-        
+            title('Non Solvers', 'color', red);
+        hold on
         for ii=1:N
             plot([Var{i+1}(ii), Var{i+2}(ii)]','LineWidth', 2, 'color', C(ii,:), 'linestyle', '--')
             hold on;
@@ -38,7 +38,7 @@ for i =1:2
         sigstar([1 2], p, [],higherBar);
     end
     
-    TextLabel = 'Speed-Accuracy Trade-off';
+    TextLabel = 'Trade-off (Implicit)';
     Labels = {'Rule', '\0Rule'};
     set(gca, 'xlim', [0.5 2.5]);
     

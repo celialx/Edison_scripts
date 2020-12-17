@@ -3,7 +3,6 @@
 %------------------------------------------------------------------
 
 % The script "Analyses_Edison_EEG" need to be run before this one
-% Think about adding mean PVT post for 84RD (bug script)
 
 clear all; close all; clc;
 
@@ -24,7 +23,7 @@ AllSubjects = {'01HC'; '02ZB'; '03JF'; '04BS'; '05MB'; '06NJ'; '07LB'; '08CB'; '
     '107AS'; '108JC'; '109JF'; '110SD'; '111MB'; '112GC'};
 
 % Load EEG info
-EEGPath = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\Edison_Tables';
+EEGPath = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\Edison_Tables\';
 EEG_filename = [EEGPath filesep 'Edison_EEG.mat'];
 load(EEG_filename);
 
@@ -166,8 +165,12 @@ for i_sub=1:length(AllSubjects)
         
     else
         load(cell2mat(Post_Sub));Post_T = struct2table(Post);
+         if strcmp (sujet,'84RD')
+          Edison_Behaviour(i_sub).meanPVT_Post = 295.3657; % bug script, asked him what was his mean rt
+         else
         Edison_Behaviour(i_sub).meanPVT_Post = meanPVT2;
-        
+         end
+         
         if strcmp (sujet,'104MR')
             BeforeImplicit = Post_T.Time(2:Nb_Post_Trial); %first trial: big reaction time, after stable
         elseif strcmp (sujet,'87MD')

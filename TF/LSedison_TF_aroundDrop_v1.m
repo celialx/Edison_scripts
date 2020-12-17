@@ -2,19 +2,29 @@
 clear all
 close all
 
-path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
-path_localsleep='/Users/tand0009/WorkGit/projects/inprogress/wanderIM/localsleep';
+Computer = 'Célia';
+if strcmp(Computer, 'Thomas')
+    path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
+    path_localsleep='/Users/tand0009/WorkGit/projects/inprogress/wanderIM/localsleep';
+    path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
+    data_path='/Users/tand0009/Data/LS_Edison/';
+save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
+
+elseif strcmp(Computer, 'Célia')
+    path_localsleep='D:\MATLAB\Toolbox\wanderIM\localsleep\';
+    path_fieldtrip = 'D:\MATLAB\Toolbox\fieldtrip-20200409\';
+    path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
+    data_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\EEG\';
+save_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
+T_path = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\T\';
+end
+
 addpath(path_fieldtrip);
 addpath(path_localsleep);
 ft_defaults;
 
-path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
 addpath(genpath(path_LSCPtools));
-
-data_path='/Users/tand0009/Data/LS_Edison/';
-save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
-% data_path='/Volumes/shared/R-MNHS-SPP/Bellgrove-data/Jess Barnes EEG Backup Data/EEG_CTET/';
-files=dir([data_path filesep '*' filesep '*.edf']);
+files=dir([data_path '*.edf']);
 
 %% INFO FROM CELIA
 % - le fichier EDF: attention on enregistrait l'intégralité de l'expérience donc la pause ne commence normalement pas au début de l'enregistrement (sauf si on a oublié de lancer l'enregistrement au tout début...!)
@@ -33,17 +43,14 @@ for nF=1:length(files)
     sep=findstr(File_Name,'_');
     SubdID=SubdID(1:sep(1)-1);
     
-    if exist([Folder_Name filesep 'T_' SubdID '.mat'])==0
-        warning('matrix file missing');
-        continue;
+    if exist([T_path 'T_' SubdID '.mat'])==0
+        warning(['matrix ' SubID ' file missing']);
     end
-    load([Folder_Name filesep 'T_' SubdID '.mat'])
+    load([T_path 'T_' SubdID '.mat'])
     %     scores=find(T.StadeL~='?');
     if ~isempty(find(T.Ball(:,1)))
         fprintf('... processing %s\n',File_Name);
         
-        
-        % data=ft_read_data('/Volumes/tLab_BackUp1/Monash/CTET_Dockree/EEG_CTET/01_ctet_session1_ATM.bdf');
         hdr=ft_read_header([Folder_Name filesep File_Name]);
         events=ft_read_event([Folder_Name filesep File_Name]);
         %         dat=ft_read_data([Folder_Name filesep File_Name]);
@@ -90,7 +97,10 @@ for nF=1:length(files)
     
 end
 
+save([save_path 'Tf_around_drops.mat'], 'TFRhann', 'all_TF_drops');
 %%
+save_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
+load([save_path 'Tf_around_drops.mat'])
 freqs=TFRhann.freq;
 times=TFRhann.time;
 temp_toplot=squeeze(mean(all_TF_drops(:,2,:,:),1));
@@ -102,32 +112,32 @@ xlabel('Time from Drop (s)')
 ylabel('Frequency (Hz)')
 title(sprintf('N=%g drops',size(all_TF_drops,1)))
 format_fig;
- %%
+%%
 figure;
 subplot(1,2,1);
 temp_toplot=squeeze(mean(all_TF_drops(StageDrop==0,2,:,:),1));
- h=simpleTFplot(temp_toplot,freqs,times,0,0);
- caxis([-4 4])
- 
- subplot(1,2,2);
+h=simpleTFplot(temp_toplot,freqs,times,0,0);
+caxis([-4 4])
+
+subplot(1,2,2);
 temp_toplot=squeeze(mean(all_TF_drops(StageDrop~=0,2,:,:),1));
- h=simpleTFplot(temp_toplot,freqs,times,0,0);
- caxis([-4 4])
- 
- %%
- FOI=[1 4];
- COI=2;
- figure;
+h=simpleTFplot(temp_toplot,freqs,times,0,0);
+caxis([-4 4])
+
+%%
+FOI=[1 4];
+COI=2;
+figure;
  temp_toplot=squeeze(mean(all_TF_drops(:,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
- simpleTplot(times,temp_toplot,0,'k',0,'-',0.5,1,0,1,1);
- xlim([-60 20])
- format_fig;
- xlabel('Time from Drop (s)')
- ylabel('Power (dB)')
- title(sprintf('N=%g drops',size(all_TF_drops,1)))
+simpleTplot(times,temp_toplot,0,'k',0,'-',0.5,1,0,1,1);
+xlim([-60 30])
+format_fig;
+xlabel('Time from Drop (s)')
+ylabel('Power (dB)')
+title(sprintf('N=%g drops',size(all_TF_drops,1)))
 %  hold on;
 %  temp_toplot=squeeze(mean(all_TF_drops(StageDrop==0,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 %  simpleTplot(times,temp_toplot,0,'r',0,'-',0.5,1,0,1,1);
 %  temp_toplot=squeeze(mean(all_TF_drops(StageDrop~=0,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 %  simpleTplot(times,temp_toplot,0,'b',0,'-',0.5,1,0,1,1);
-%  
+% %

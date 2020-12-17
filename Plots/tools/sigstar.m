@@ -260,7 +260,7 @@ stars='n.s.'
     if p<=0.05
         offset=0.005;
     else
-        offset=0.03;
+        offset=0.04;
     end
 
     starY=mean(y)+myRange(ylim)*offset;

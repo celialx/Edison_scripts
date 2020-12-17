@@ -126,7 +126,7 @@ higherBar = 1;
 
 % Define variables
 for i =1%:2
-    subplot(1,2,i)
+%     subplot(1,2,i)
     
     Factor = Factor_cate;
     
@@ -138,7 +138,7 @@ for i =1%:2
         
         groups = [zeros(1,length(b.Wake)-2) ones(1,length(b.N1)-2) 1+ones(1,length(b.N2)-2)];
         data = [b.Wake(1:end-2) b.N1(1:end-2) b.N2(1:end-2)];
-        [p(i), stats] = kruskalwallis(data, groups);
+        [p(i), stats] = kruskalwallis(data, groups, 'off');
         
     elseif i ==2
         you2.Solvers = Factor(AllSol); you2.NonSolvers = Factor(AllNonSol);
@@ -151,7 +151,7 @@ for i =1%:2
         p = kruskalwallis(data, groups, 'off');
         
     end
-    ylabel('Proportion');
+    ylabel('Used to enigmas (proportion)');
     
     set(gca,'XTick',[1 2 3],'XTickLabels',{'No', 'A little', 'Yes'});
     

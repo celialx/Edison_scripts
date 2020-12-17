@@ -2,19 +2,31 @@
 clear all
 close all
 
+Computer = 'Célia';
+if strcmp(Computer, 'Thomas')
 path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
 path_localsleep='/Users/tand0009/WorkGit/projects/inprogress/wanderIM/localsleep';
 addpath(path_fieldtrip);
-addpath(path_localsleep);
-ft_defaults;
-
 path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
-addpath(genpath(path_LSCPtools));
-
 data_path='/Users/tand0009/Data/LS_Edison/';
 save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
-% data_path='/Volumes/shared/R-MNHS-SPP/Bellgrove-data/Jess Barnes EEG Backup Data/EEG_CTET/';
-files=dir([data_path filesep '*' filesep '*.edf']);
+elseif strcmp(Computer, 'Célia')
+    path_fieldtrip='D:\MATLAB\Toolbox\fieldtrip-20200409\';
+        path_localsleep='D:\MATLAB\Toolbox\wanderIM\localsleep\';
+    path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
+save_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
+        data_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\EEG\';
+T_path = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\T\';
+path_signal = 'D:\MATLAB\Toolbox\signal\';
+end
+
+addpath(path_localsleep);
+addpath(path_fieldtrip);
+ft_defaults;
+addpath(genpath(path_LSCPtools));
+addpath(genpath(path_signal));
+
+files=dir([data_path '*.edf']);
 
 %% INFO FROM CELIA
 % - le fichier EDF: attention on enregistrait l'intégralité de l'expérience donc la pause ne commence normalement pas au début de l'enregistrement (sauf si on a oublié de lancer l'enregistrement au tout début...!)
@@ -26,16 +38,17 @@ files=dir([data_path filesep '*' filesep '*.edf']);
 doERP=1;
 for nF=1:length(files)
     File_Name=files(nF).name;
-    Folder_Name=files(nF).folder;
+%     Folder_Name=files(nF).folder;
+     Folder_Name=data_path;
     SubdID=File_Name;
     sep=findstr(File_Name,'_');
     SubdID=SubdID(1:sep(1)-1);
     
-    if exist([Folder_Name filesep 'T_' SubdID '.mat'])==0
+    if exist([T_path 'T_' SubdID '.mat'])==0
         warning('matrix file missing');
         continue;
     end
-    load([Folder_Name filesep 'T_' SubdID '.mat'])
+    load([T_path 'T_' SubdID '.mat'])
     
     % data=ft_read_data('/Volumes/tLab_BackUp1/Monash/CTET_Dockree/EEG_CTET/01_ctet_session1_ATM.bdf');
     hdr=ft_read_header([Folder_Name filesep File_Name]);

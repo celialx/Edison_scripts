@@ -53,11 +53,15 @@ for i_sub=1:length(AllSubjects)
     N2EpochsEdison = unique(N2EpochsEdison); NbEpochsN2Edison = length(N2EpochsEdison);
     
     
-    if isempty(N1EpochsEdison) ==1
+    if NbEpochsN1Edison ==0 && NbEpochsN2Edison ==0
         epochEdisonlatency =NaN;
         Edisonlatency = NaN;
     else
+        if isempty(N1EpochsEdison) ==1 %take into account sub directly falling into N2
+            epochEdisonlatency = N2EpochsEdison(1); 
+        else
         epochEdisonlatency = N1EpochsEdison(1);
+        end
         Edisonlatency = minus(epochEdisonlatency, StartEdisonEpoch)*30; % in secs % at least two epochs in a row
         % Edisonlatency = time it took from the beginning to get an epoch (30 sec)
         % of N1 in secs
