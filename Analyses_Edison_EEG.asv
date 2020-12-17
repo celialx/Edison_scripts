@@ -48,14 +48,9 @@ for i_sub=1:length(AllSubjects)
     N1EpochsEdison = N1Epochs(N1Epochs>= StartEdisonEpoch & N1Epochs<=EndEdisonEpoch);
     N1EpochsEdison = unique(N1EpochsEdison); NbEpochsN1Edison = length(N1EpochsEdison);
     
-     BERN_Epochs = T.Epoch(T.N1(:,1)==1);
-    BERN_EpochsEdison = BERN_Epochs(BERN_Epochs>= StartEdisonEpoch & BERN_Epochs<=EndEdisonEpoch);
-    BER_EpochsEdison = unique(BERN_EpochsEdison); NbEpochsBERN_Edison = length(BERN_EpochsEdison);
-    if NbEpochsBERN_Edison ==0
-        BERN_latency = NaN;
-    else
-    BERN_latency = minus(BER_EpochsEdison(1), StartEdisonEpoch)*30; % in secs % at least two epochs in a row
-    end
+     BERN_Epochs = T.Epoch(cellstr(T.N1)=="1");
+    BERN_EpochsEdison = N1Epochs(N1Epochs>= StartEdisonEpoch & N1Epochs<=EndEdisonEpoch);
+    BEREpochsEdison = unique(N1EpochsEdison); NbEpochsN1Edison = length(N1EpochsEdison);
     
     N2Epochs = T.Epoch(cellstr(T.StadeL)=="2");
     N2EpochsEdison = N2Epochs(N2Epochs>= StartEdisonEpoch & N2Epochs<=EndEdisonEpoch);
@@ -179,9 +174,9 @@ for i_sub=1:length(AllSubjects)
     timeBallFell = {timeBallFell}; stadeBall = {stadeBall};timeN1bfBall = {timeN1bfBall}; LengthBoutsN1Edison = {LengthBoutsN1Edison};
     Sujet = cellstr(sujet);
     
-    Edison_EEG(i_sub,:) = table(Sujet,SleepEdison,HypnoEdisonWake,HypnoEdisonN1, HypnoEdisonN2, NbEpochsN2Edison, NbEpochsN1Edison,BERN_latency, Edisonlatency, ...
+    Edison_EEG(i_sub,:) = table(Sujet,SleepEdison,HypnoEdisonWake,HypnoEdisonN1, HypnoEdisonN2, NbEpochsN2Edison, NbEpochsN1Edison,Edisonlatency, ...
         PercentN1Edison_Micro, timeN1Edison, Fall, timeBallFell, stadeBall, timeN1bfBall, timeBallfromStart, lengthboutBall,NbboutsBeforeBall,...
-        Ball2End,TimeBtwLastN1_2End,NbWakefromN1Bouts, LengthBoutsN1Edison);
+        Ball2End,TimeBtwLastN1_2End, NbWakefromN1Bouts, LengthBoutsN1Edison);
     
     %         save(strcat(pathT,'Details_Edison', sujet), 'LengthBoutsN1Edison');
     
