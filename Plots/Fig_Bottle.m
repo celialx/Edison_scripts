@@ -27,6 +27,7 @@
 % Fig : A: timeN1 before drop percentage, B: timeN1before drop, C: meta
 % sleep
 
+
 Init;
 decalage = 1;
 c=cbrewer('div', 'Spectral', 3);
@@ -61,7 +62,7 @@ Labels = {'Yes'; 'No'};
 higherBar = 1; % Pour passer au dessus des surtitres
 sigstar([1,2],p, [], higherBar);
 Design;
-
+%%
 subplot(2,3,3)
 gyt_PiratePlot(1,timeN1bfBall/60,0.5,2,'y',N1color,'y');
 hold on

@@ -58,6 +58,7 @@ Init;
 decalage =1; higherBar =0;
 
 figure
+Data.timeN1Edison(AllNonSol)
 diff_Sol_Correct(isnan(diff_Sol_Correct)) = [];
 diff_Sol_RT(isnan(diff_Sol_RT)) = [];
 
