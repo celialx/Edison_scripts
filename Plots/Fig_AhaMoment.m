@@ -11,7 +11,7 @@ y = [AhaMoment_Wake; AhaMoment_N1; AhaMoment_N2];
 h = beeswarm(x, y, 'sort_style', 'up', 'overlay_style', 'ci', 'dot_size', 3, 'colormap', Color3N2, 'MarkerFacealpha', 0.5,'MarkerEdgeColor','k');
 Labels = 'Trials';
 TextLabel = 'Eureka: Trial Number';
-p= anova1(padcat(AhaMoment_Wake, AhaMoment_N1, AhaMoment_N2), [],'off');
+[p,ANOVATAB,STATS]= kruskalwallis(padcat(AhaMoment_Wake, AhaMoment_N1, AhaMoment_N2), [],'off');
 sigstar([0.25, 1.25], p ,[], higherBar)
 % title ('Solvers \it{Post}');
 
