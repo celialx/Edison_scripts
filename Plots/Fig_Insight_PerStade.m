@@ -9,23 +9,28 @@ decalage = 0; higherBar = 0;
 Var = [Pre_Solver_Percent, Post_Solver_Wake_Percent, Post_Solver_N1_Percent, Post_Solver_N2_Percent];
 
 for i = 1:4
-    bar(i, Var(i), 'FaceColor', Color4(i,:), 'EdgeColor', Edge4(i,:), 'LineWidth', 2);
+    if i ==1; pos = i; else pos = i+0.5; end
+    bar(pos, Var(i), 'FaceColor', Color4(i,:), 'EdgeColor', Edge4(i,:), 'LineWidth', 2);
     hold on
 end
 
 TextLabel = 'Insight (%)';
-Labels = Labels4;
+Labels = 'Trials';
 
 Design;
+
+set(gca,'XTick',[1 2.5 3.5 4.5],'XTickLabels',Labels4,'FontWeight', 'bold');
 
 y1 = set(gca, 'ylim',[0 100]);
 yticks([0:20:100]);
 
-% Stat: contingency table (fischer test)
+xline(1.75, '--', 'FontSize', 20, 'LineWidth', 2.5, 'Color', Basiccolor)
+
+% Stat: contingency table (fisher test)
 % v =1: comparison of pre with remaining groups
 % v =2: comparison of wake with remaining groups
 
-for v = 1:2
+for v = 2%1:2
     
     if v ==1
         Var_cte_solver = Nb_Pre_Solver;
@@ -57,9 +62,9 @@ for v = 1:2
         
         [h,p,stats] = fishertest(table_cont);
         if v ==1
-            sigstar([1,i+1], p, [], higherBar);
+            sigstar([1,i+2], p, [], higherBar);
         elseif v==2
-            sigstar([2,i+2], p, [], higherBar);
+            sigstar([2.5,i+2.5], p, [], higherBar);
         end
     end
 end
