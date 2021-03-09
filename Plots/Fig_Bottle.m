@@ -29,19 +29,19 @@
 
 
 Init;
-decalage = 1;
+decalage = 1; higherBar = 1;
 c=cbrewer('div', 'Spectral', 3);
 
-subplot(2,3,1) % 1 prevent from going into N2
-drop_beforeN2 = (length(stadeBall_All)-sum(stadeBall_All==2))/length(stadeBall_All)*100
-bar(1, drop_beforeN2,'FaceColor', [0 0.75 0.75], 'LineWidth', 2, 'EdgeColor', Basiccolor);
-str1 = sprintf('%d %',round(drop_beforeN2)); Text1 =text(1, drop_beforeN2+5, str1, 'color', Basiccolor, 'FontWeight', 'bold');
-hold on
-TextLabel = 'Bsottle drop (%)';
-Labels = {'Before N2'};
-Design; 
+subplot(2,2,1) % 1 prevent from going into N2
+% drop_beforeN2 = (length(stadeBall_All)-sum(stadeBall_All==2))/length(stadeBall_All)*100
+% bar(1, drop_beforeN2,'FaceColor', [0 0.75 0.75], 'LineWidth', 2, 'EdgeColor', Basiccolor);
+% str1 = sprintf('%d %',round(drop_beforeN2)); Text1 =text(1, drop_beforeN2+5, str1, 'color', Basiccolor, 'FontWeight', 'bold');
+% hold on
+% TextLabel = 'Bottle drop (%)';
+% Labels = {'Before N2'};
+% Design; 
 
-subplot(2,3,2) % % fell N1 vs wake
+subplot(2,2,1) % % fell N1 vs wake
 
 bar(1,nnz(timeN1bfBall)/length(timeN1bfBall)*100,'FaceColor', N1color, 'LineWidth', 2, 'EdgeColor', N1edge)
 str1 = sprintf('%d %',nnz(timeN1bfBall)/length(timeN1bfBall)*100); Text1 =text(1, max(nnz(timeN1bfBall)/length(timeN1bfBall)*100+2), str1, 'color', Basiccolor, 'FontWeight', 'bold');
@@ -62,45 +62,49 @@ Labels = {'Yes'; 'No'};
 higherBar = 1; % Pour passer au dessus des surtitres
 sigstar([1,2],p, [], higherBar);
 Design;
-%%
-subplot(2,3,3)
+
+subplot(2,2,2)
 gyt_PiratePlot(1,timeN1bfBall/60,0.5,2,'y',N1color,'y');
 hold on
-Labels = {'BERN'};
+Labels = {'Micro sleep'};
 
 TextLabel = 'Time of N1 before drop (min)';
 set(gca, 'xlim', [0.3 1.5]);
 Design;
 
-subplot(2,3,4)
+% subplot(2,3,4)
+% 
+% load([path_local 'Tf_around_drops.mat'])
+% freqs=TFRhann.freq;
+% times=TFRhann.time;
+% temp_toplot=squeeze(mean(all_TF_drops(:,2,:,:),1));
+% h=simpleTFplot(temp_toplot,freqs,times,0,0);
+% caxis([-4 3])
+% colorbar;
+% 
+% xlabel('Time from Drop (s)')
+% ylabel('Frequency (Hz)')
+% title(sprintf('N=%g drops',size(all_TF_drops,1)))
+% format_fig;
+% clear xlim
 
-load([path_local 'Tf_around_drops.mat'])
+subplot(2,2,3)
+save_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
+load([save_path 'Tf_around_drops.mat'])
 freqs=TFRhann.freq;
 times=TFRhann.time;
-temp_toplot=squeeze(mean(all_TF_drops(:,2,:,:),1));
-h=simpleTFplot(temp_toplot,freqs,times,0,0);
-caxis([-4 3])
-colorbar;
-
-xlabel('Time from Drop (s)')
-ylabel('Frequency (Hz)')
-title(sprintf('N=%g drops',size(all_TF_drops,1)))
-format_fig;
-clear xlim
-
-subplot(2,3,5)
-
 FOI=[1 4];
 COI=2;
  temp_toplot=squeeze(mean(all_TF_drops(:,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 simpleTplot(times,temp_toplot,0,'k',0,'-',0.5,1,0,1,1);
+clear xlim;
 xlim([-60 30])
 format_fig;
 xlabel('Time from Drop (s)')
 ylabel('Power (dB)')
 title(sprintf('N=%g drops',size(all_TF_drops,1)))
 
-subplot(2,3,6)
+subplot(2,2,4)
 
 Labels = {'Yes'; 'No'};
 TextLabel = 'Hypnagogia (%)';

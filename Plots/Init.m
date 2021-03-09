@@ -108,6 +108,11 @@ WakeBfBall = nnz(stadeBall_All==0)/Nb_Ball*100;
 % After how long did it fall?
 timeN1bfBall = horzcat(Data.timeN1bfBall{:}); alltimeN1bfBall = timeN1bfBall;
 timeN1bfBall(isnan(timeN1bfBall)) =[];
+
+timeN2bfBall = horzcat(Data.timeN2bfBall{:}); alltimeN2bfBall = timeN2bfBall;
+timeN2bfBall(isnan(timeN2bfBall)) =[];
+
+timeSleepbfBall = timeN1bfBall+timeN2bfBall;
 %-----------------------------------------------------------------
 % Hypnagogia Bottle vs No bottle
 %------------------------------------------------------------------
