@@ -2,19 +2,17 @@
 clear all
 close all
 
-path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
-path_localsleep='/Users/tand0009/WorkGit/projects/inprogress/wanderIM/localsleep';
-addpath(path_fieldtrip);
+path_localsleep='D:\MATLAB\Toolbox\wanderIM\localsleep\';
 addpath(path_localsleep);
 ft_defaults;
 
-path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
+path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
 addpath(genpath(path_LSCPtools));
 
-data_path='/Users/tand0009/Data/LS_Edison/';
-save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
+ data_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\EEG\';
+save_path='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\'
 % data_path='/Volumes/shared/R-MNHS-SPP/Bellgrove-data/Jess Barnes EEG Backup Data/EEG_CTET/';
-files=dir([data_path filesep '*' filesep '*.edf']);
+files=dir([data_path '*.edf']);
 
 %% INFO FROM CELIA
 % - le fichier EDF: attention on enregistrait l'intégralité de l'expérience donc la pause ne commence normalement pas au début de l'enregistrement (sauf si on a oublié de lancer l'enregistrement au tout début...!)
@@ -48,9 +46,7 @@ for nF=1:length(files)
     if ~isempty(find(T.Ball(:,1)))
         fprintf('... processing %s\n',File_Name);
         
-        
-        % data=ft_read_data('/Volumes/tLab_BackUp1/Monash/CTET_Dockree/EEG_CTET/01_ctet_session1_ATM.bdf');
-        hdr=ft_read_header([Folder_Name filesep File_Name]);
+                hdr=ft_read_header([Folder_Name filesep File_Name]);
         events=ft_read_event([Folder_Name filesep File_Name]);
         %         dat=ft_read_data([Folder_Name filesep File_Name]);
         

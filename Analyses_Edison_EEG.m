@@ -9,7 +9,7 @@ pathT = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\T\';
 SavePath = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\Edison_Tables\';
 
 % Rajouter 13AB & 66LY for data bottle (did not finish post but did breaks)
-
+%
 AllSubjects = {'01HC'; '02ZB'; '03JF'; '04BS'; '05MB'; '06NJ'; '07LB'; '08CB'; '09FN'; '10OL'; '11BD'; '12TG'; '14CD'...
     ; '15CV' ; '16LK'; '17ML'; '18LW'; '19HJ'; '20JJ'; '21IH'; '22HK';'24MK'; '25DS'; '26DB'; '27JS'; '28MD'; '29AN'...
     ; '30LM';'32DP'; '33NM'; '34AP'; '35NM'; '36DF'; '37SA'; '39NL'; '40EE'; '41RL'; '42AP'...
@@ -48,16 +48,29 @@ for i_sub=1:length(AllSubjects)
     N1EpochsEdison = N1Epochs(N1Epochs>= StartEdisonEpoch & N1Epochs<=EndEdisonEpoch);
     N1EpochsEdison = unique(N1EpochsEdison); NbEpochsN1Edison = length(N1EpochsEdison);
     
+    BERN_Epochs = T.Epoch(T.N1(:,1)==1);
+    BERN_EpochsEdison = BERN_Epochs(BERN_Epochs>= StartEdisonEpoch & BERN_Epochs<=EndEdisonEpoch);
+    BER_EpochsEdison = unique(BERN_EpochsEdison); NbEpochsBERN_Edison = length(BERN_EpochsEdison);
+    if NbEpochsBERN_Edison ==0
+        BERN_latency = NaN;
+    else
+        BERN_latency = minus(BER_EpochsEdison(1), StartEdisonEpoch)*30; % in secs % at least two epochs in a row
+    end
+    
     N2Epochs = T.Epoch(cellstr(T.StadeL)=="2");
     N2EpochsEdison = N2Epochs(N2Epochs>= StartEdisonEpoch & N2Epochs<=EndEdisonEpoch);
     N2EpochsEdison = unique(N2EpochsEdison); NbEpochsN2Edison = length(N2EpochsEdison);
     
     
-    if isempty(N1EpochsEdison) ==1
+    if NbEpochsN1Edison ==0 && NbEpochsN2Edison ==0
         epochEdisonlatency =NaN;
         Edisonlatency = NaN;
     else
-        epochEdisonlatency = N1EpochsEdison(1);
+        if isempty(N1EpochsEdison) ==1 %take into account sub directly falling into N2
+            epochEdisonlatency = N2EpochsEdison(1);
+        else
+            epochEdisonlatency = N1EpochsEdison(1);
+        end
         Edisonlatency = minus(epochEdisonlatency, StartEdisonEpoch)*30; % in secs % at least two epochs in a row
         % Edisonlatency = time it took from the beginning to get an epoch (30 sec)
         % of N1 in secs
@@ -101,17 +114,30 @@ for i_sub=1:length(AllSubjects)
         timeBallFell= NaN;
         stadeBall = NaN;
         timeN1bfBall = NaN;
+        timeN2bfBall = NaN;
         timeBallfromStart = NaN;
-        lengthboutBall = NaN;
+        lengthLastBout = NaN;
         NbboutsBeforeBall = NaN;
         Ball2End = NaN;
+        
     else
         Fall = nnz(T.Ball(:,1));
         timeBall=find(T.Ball==1);
         %time from start to ball drop
         
-        
-        timeBallfromStart = timeBall(1) - StartEdison;
+        for i = 1:length(timeBall)
+            timeBallfromStart(i) = timeBall(i) - StartEdison;
+            if isempty(StartBoutsN1Edison) ==1 % pas de périodes de N1
+                lengthLastBout(i) = 0;   NbboutsBeforeBall(i) =0;
+            elseif minus(timeBallfromStart(i), StartBoutsN1Edison) <0 % N1 après lâcher bouteille
+                lengthLastBout(i)=0;NbboutsBeforeBall(i)=0;
+            else
+                [Index(i) NbboutsBeforeBall(i)]= min(abs(timeBallfromStart(i)-StartBoutsN1Edison));
+                lengthLastBout(i) = LengthBoutsN1Edison(NbboutsBeforeBall(i));
+                if i>1; NbboutsBeforeBall(i) = NbboutsBeforeBall(i) - NbboutsBeforeBall(i-1) ; end
+                if lengthLastBout(i)<0; lengthLastBout(i)=0;NbboutsBeforeBall(i)=0;end
+            end
+        end
         
         stadeN1Ball = T.N1(timeBall-2);
         AllstadeBall = T.Stade(timeBall-2);
@@ -128,52 +154,34 @@ for i_sub=1:length(AllSubjects)
         if Fall ==1
             timeBallFell = timeBall - StartEdison;
             timeN1bfBall = nnz(T.N1(StartEdison:timeBall,1));
+            timeN2bfBall = nnz(T.Stade(StartEdison:timeBall,1)==2);
+
         else
             timeBallFell(1) = timeBall(1) - StartEdison; %time from start of the first drop
             timeN1bfBall(1) = nnz(T.N1(StartEdison:timeBall(1),1)); % 1er fall: time of N1 from the beginning
-            
+            timeN2bfBall(1) = nnz(T.Stade(StartEdison:timeBall,1)==2);
+
             for i = 2:Fall %other fall time of N1 from the preceding fall
                 timeBallFell(i) = timeBall(i) - timeBall(i-1); %time from start of the first drop
                 timeN1bfBall(i) = nnz(T.N1(timeBall(1):timeBall(i),1));
+                timeN2bfBall(i) = nnz(T.Stade(timeBall(1):timeBall(i),1)==2);
+
             end
         end
         
-        if stadeBall == 0
-            lengthboutBall = NaN;
-            NbboutsBeforeBall = NaN;
-            Ball2End = minus(EndEdison, timeBall(end));
-            
-        else
-            for u = 1:length (StartBoutsN1Edison)
-                
-                if Fall ==1
-                    test(u) = minus(timeBallFell, StartBoutsN1Edison(u));
-                elseif strcmp(sujet, '40EE')
-                    test(u) = minus(timeBall(2)-StartEdison, StartBoutsN1Edison(u)); %ce sujet a des périodes de N1 après premier lacher de bouteille
-                else
-                    test(u) = minus(timeBallfromStart, StartBoutsN1Edison(u)); %réflechir à comment prendre en compte les autres drops ici
-                end
-            end
-            
-            Ball2End = minus(EndEdison, timeBall(end));
-            [minValue, IndexBoutBall] = min(test(test>0));
-            lengthboutBall = minus(timeBallfromStart, StartBoutsN1Edison(IndexBoutBall)); % nombre de secondes du bout de N1 précédant le lacher de balle
-            NbboutsBeforeBall = IndexBoutBall-1; % nb bouts de N1 before lacher balle
-            
-        end
     end
     
-    timeBallFell = {timeBallFell}; stadeBall = {stadeBall};timeN1bfBall = {timeN1bfBall}; LengthBoutsN1Edison = {LengthBoutsN1Edison};
+    timeBallFell = {timeBallFell}; stadeBall = {stadeBall};timeN1bfBall = {timeN1bfBall}; timeN2bfBall = {timeN2bfBall}; LengthBoutsN1Edison = {LengthBoutsN1Edison};
+    lengthLastBout = {lengthLastBout}; NbboutsBeforeBall = {NbboutsBeforeBall};timeBallfromStart = {timeBallfromStart};
     Sujet = cellstr(sujet);
     
-    Edison_EEG(i_sub,:) = table(Sujet,SleepEdison,HypnoEdisonWake,HypnoEdisonN1, HypnoEdisonN2, NbEpochsN2Edison, NbEpochsN1Edison,Edisonlatency, ...
-        PercentN1Edison_Micro, timeN1Edison, Fall, timeBallFell, stadeBall, timeN1bfBall, timeBallfromStart, lengthboutBall,NbboutsBeforeBall,...
-        Ball2End,TimeBtwLastN1_2End, NbWakefromN1Bouts, LengthBoutsN1Edison);
+    Edison_EEG(i_sub,:) = table(Sujet,SleepEdison,HypnoEdisonWake,HypnoEdisonN1, HypnoEdisonN2, NbEpochsN2Edison, NbEpochsN1Edison,BERN_latency, Edisonlatency, ...
+        PercentN1Edison_Micro, timeN1Edison, Fall, timeBallFell, stadeBall, timeN1bfBall, timeN2bfBall, timeBallfromStart, lengthLastBout,NbboutsBeforeBall,...
+        TimeBtwLastN1_2End,NbWakefromN1Bouts, LengthBoutsN1Edison);
     
     %         save(strcat(pathT,'Details_Edison', sujet), 'LengthBoutsN1Edison');
     
     keep('Edison_EEG', 'SavePath', 'pathT', 'AllSubjects');
-    
 end
 save(strcat(SavePath,'Edison_EEG'), 'Edison_EEG');
 

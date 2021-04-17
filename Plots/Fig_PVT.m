@@ -1,5 +1,5 @@
 %% PVT Results
-% Init;
+ Init;
 
 % Pense à enlever le premier PVT pour le mean
 close all
@@ -50,7 +50,7 @@ for i = 1:6
     elseif i == 6
         x = padcat(Data.meanPVT_Post(Wake),Data.meanPVT_Post(N1),Data.meanPVT_Post(N2));
         [p, ANOVATAB, stats] = anova1(x, [], 'off');
-        a=multcompare(stats, 'display', 'off')
+        a=multcompare(stats, 'display','off')
         
         sigstar([1 2],a(1,6), [], higherBar);
         sigstar([1 3],a(2,6), [], higherBar);

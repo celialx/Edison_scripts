@@ -7,9 +7,14 @@ clear all; close all; clc;
 FigPath = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\Figures\';
 TablePath = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\Edison_Tables\';
 load([TablePath, 'All_Data']);
+path_local ='C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\LocalSleep\';
+path_LSCPtools='D:\MATLAB\Toolbox\LSCPtools\';
+path_localsleep='D:\MATLAB\Toolbox\wanderIM\localsleep\';
+addpath(path_localsleep);
+addpath(genpath(path_LSCPtools));
 
 %If you desire to print figure, set this to 1
-SaveFig = 1;
+SaveFig = 0;
 
 %-----------------------------------------------------------------
 % Initialisation
@@ -101,8 +106,13 @@ N1BfBall = nnz(stadeBall_All==1)/Nb_Ball*100;
 WakeBfBall = nnz(stadeBall_All==0)/Nb_Ball*100;
 
 % After how long did it fall?
-timeN1bfBall = horzcat(Data.timeN1bfBall{:}); timeN1bfBall(isnan(timeN1bfBall)) =[];
+timeN1bfBall = horzcat(Data.timeN1bfBall{:}); alltimeN1bfBall = timeN1bfBall;
+timeN1bfBall(isnan(timeN1bfBall)) =[];
 
+timeN2bfBall = horzcat(Data.timeN2bfBall{:}); alltimeN2bfBall = timeN2bfBall;
+timeN2bfBall(isnan(timeN2bfBall)) =[];
+
+timeSleepbfBall = timeN1bfBall+timeN2bfBall;
 %-----------------------------------------------------------------
 % Hypnagogia Bottle vs No bottle
 %------------------------------------------------------------------
@@ -144,6 +154,7 @@ AhaMoment = Data.AhaMoment(SolPost);% (restreined here to post solvers)
 % Is there a difference btw vigilance states?
 AhaMoment_Wake = Data.AhaMoment(Data.InsightPost==1 & WakeAll);
 AhaMoment_N1 = Data.AhaMoment(Data.InsightPost==1 & N1All);
+AhaMoment_N2 = Data.AhaMoment(Data.InsightPost==1 & N2All);
 
 %-----------------------------------------------------------------
 % Analyses on implicit task

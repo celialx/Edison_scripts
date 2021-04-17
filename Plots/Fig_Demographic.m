@@ -10,28 +10,33 @@ Factor_label = {'Age'; 'Educational level'; 'Epworth Score'};
 figure
 decalage =1;
 
-for i = 1:size(Factor_num,2)
+for i = 3%:size(Factor_num,2)
     
     fig =  subplot(1,3,i)
     
     Factor = Factor_num(:,i);
-    Var1 = Factor(WakeAll); Var2= Factor(N1All);
-    violinPlot(Var1, 'histOri', 'left', 'widthDiv', [2 1], 'showMM', 2, ...
-        'color', Color2(1,:));
+    Var1 = Factor(Wake); Var2= Factor(N1); Var3 = Factor(N2);
+    violinPlot(Var1, 'histOri', 'left', 'widthDiv', [3 1], 'showMM', 2, ...
+        'color', Color3N2(1,:));
     
     hold on;
     
-    violinPlot(Var2, 'histOri', 'right', 'widthDiv', [2 2], 'showMM', 2, ...
-        'color', Color2(2,:));
+    violinPlot(Var2, 'histOri', 'right', 'widthDiv', [3 2], 'showMM', 2, ...
+        'color', Color3N2(2,:));
+    
+    hold on 
+    
+        violinPlot(Var3, 'histOri', 'right', 'widthDiv', [3 3], 'showMM', 2, ...
+        'color', Color3N2(3,:));
     
     Labels = 'Trials';
     TextLabel = cell2mat(Factor_label(i));
-    set(gca, 'xtick', [0.6 1.4], 'xticklabel', {'Wake', 'N1'}, 'xlim', [0.2 1.8]);
+    set(gca, 'xtick', [0.6 1.4], 'xticklabel', {'Wake', 'N1', 'N2'}, 'xlim', [0.2 1.8]);
     Design;
     
     
     % Quantitative data
-    [~, pval] = ttest2(Var1, Var2);
+    [~, pval] = anova1(padcat(Var1, Var2, Var3));
     mysigstar(gca, xticks, 3/4*ylim(2), pval);
     
 end
@@ -61,7 +66,7 @@ for i = 1:size(Factor_cate,2)
     
     % Define variables
     Factor = Factor_cate(:,i);
-    you.Wake = Factor(WakeAll); you.N1 = Factor(N1All); you.N2 = Factor(N2All);
+    you.Wake = Factor(Wake); you.N1 = Factor(N1); you.N2 = Factor(N2);
     
     [a,b,c] = nhist(you, 'p','Proportion', 'fsize', 18, 'linewidth', 4, 'smooth', 'color','colormap')
     hold off;
@@ -120,20 +125,20 @@ higherBar = 1;
 
 
 % Define variables
-for i =1:2
-    subplot(1,2,i)
+for i =1%:2
+%     subplot(1,2,i)
     
     Factor = Factor_cate;
     
     if i==1
-        you.Wake = Factor(WakeAll); you.N1 = Factor(N1All);
-        map = Color2;
+        you.Wake = Factor(Wake); you.N1 = Factor(N1); you.N2 = Factor(N2)
+        map = Color3N2;
         colormap(map);
         [a,b,c] = nhist(you, 'p','Proportion', 'fsize', 18, 'linewidth', 4, 'smooth', 'color','colormap')
         
-        groups = [zeros(1,length(b.Wake)-2) ones(1,length(b.N1)-2)];
-        data = [b.Wake(1:end-2) b.N1(1:end-2)];
-        p(i) = kruskalwallis(data, groups, 'off');
+        groups = [zeros(1,length(b.Wake)-2) ones(1,length(b.N1)-2) 1+ones(1,length(b.N2)-2)];
+        data = [b.Wake(1:end-2) b.N1(1:end-2) b.N2(1:end-2)];
+        [p(i), stats] = kruskalwallis(data, groups, 'off');
         
     elseif i ==2
         you2.Solvers = Factor(AllSol); you2.NonSolvers = Factor(AllNonSol);
@@ -146,7 +151,7 @@ for i =1:2
         p = kruskalwallis(data, groups, 'off');
         
     end
-    ylabel('Proportion');
+    ylabel('Used to enigmas (proportion)');
     
     set(gca,'XTick',[1 2 3],'XTickLabels',{'No', 'A little', 'Yes'});
     
