@@ -11,10 +11,10 @@ ft_defaults;
 path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
 addpath(genpath(path_LSCPtools));
 
-data_path='/Users/tand0009/Data/LS_Edison/';
+data_path='/Users/tand0009/Data/LS_Edison/EDF_fixed';
 save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
 % data_path='/Volumes/shared/R-MNHS-SPP/Bellgrove-data/Jess Barnes EEG Backup Data/EEG_CTET/';
-files=dir([data_path filesep '*' filesep '*.edf']);
+files=dir([data_path filesep '*.edf']);
 
 %% INFO FROM CELIA
 % - le fichier EDF: attention on enregistrait l'intégralité de l'expérience donc la pause ne commence normalement pas au début de l'enregistrement (sauf si on a oublié de lancer l'enregistrement au tout début...!)
@@ -45,8 +45,8 @@ for nF=1:length(files)
     %%% consider only the pause
     %     hypnogram = import_hypnogram([Folder_Name filesep File_Name(1:4) '_hypnogram.TXT']);
     %     scores=find(T.StadeL~='?');
-    start_pause=(T.TimeID(find(T.Start(:,1)))-1)*hdr.Fs+1;
-    end_pause=(T.TimeID(find(T.End(:,1))))*hdr.Fs;
+    start_pause=(T.Epoch(find(T.Start(:,1)))-1)*30*hdr.Fs+1;
+    end_pause=(T.Epoch(find(T.End(:,1))))*30*hdr.Fs;
     
     temp_data=dat(1:3,(start_pause:end_pause));
     temp_data=temp_data-repmat(mean(temp_data,2),1,size(temp_data,2));

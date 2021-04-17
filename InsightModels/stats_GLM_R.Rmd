@@ -1,0 +1,107 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(ggplot2)
+library(lme4)
+
+
+data <- read.table("../Edison_Tables/Clean_Data_SS_Pow_LS.txt", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+mdl0=glm('InsightPost~1',family='binomial',data)
+
+mdlcov=glm('InsightPost~1+Age+Gender+Epworth+DreamRecall+EduLevel+Laterality+UsedToEnigmas',family='binomial',data)
+anova(mdl0,mdlcov, test = "Chisq")
+
+
+mdl1=glm('InsightPost~1+SleepEdison',family='binomial',data)
+anova(mdl0,mdl1, test = "Chisq")
+
+mdl2=glm('InsightPost~1+Bottle',family='binomial',data)
+anova(mdl0,mdl2, test = "Chisq")
+
+mdl3=glm('InsightPost~1+SleepEdison*Fall',family='binomial',data)
+anova(mdl1,mdl3, test = "Chisq")
+
+
+```
+
+```{r}
+
+mdl4=glm('InsightPost~1+SleepEdison+HypnoEdisonN1+HypnoEdisonN2',family='binomial',data)
+
+summary(mdl4)
+
+```
+
+
+
+```{r}
+mdl5=glm('InsightPost~1+SleepEdison+HypnoEdisonN1+HypnoEdisonN2+Hypnagogia+HypnaBottle+HypnaTask',family='binomial',data)
+
+summary(mdl5)
+
+
+```
+```{r}
+mdl1b=glm('InsightPost~1+SleepEdison',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+
+mdl5=glm('InsightPost~1+AASM_N1+ç',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+anova(mdl1b,mdl5, test = "Chisq")
+
+mdl6=glm('InsightPost~1+STAGES_N1+STAGES_N2',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+anova(mdl1b,mdl6, test = "Chisq")
+
+data$meanPVT_Diff=data$meanPVT_Post-data$meanPVT_Pre
+
+mdl7=glm('InsightPost~1+meanPVT_Diff',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+anova(mdl1b,mdl7, test = "Chisq")
+
+
+```
+
+
+```{r}
+mdl1b=glm('InsightPost~1+SleepEdison',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+
+mdl7=glm('InsightPost~1+SleepEdison+PowDeltaN',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+anova(mdl1b,mdl7, test = "Chisq")
+
+mdl8=glm('InsightPost~1+SleepEdison+PowSlope+PowBG',family='binomial',data[is.na(data$AASM_N1)=='FALSE',])
+anova(mdl1b,mdl8, test = "Chisq")
+
+# data$Correct_Diff=data$Correct_Post-data$Correct_Pre
+# 
+# mdl1c=lm('Correct_Diff~1+SleepEdison',data[is.na(data$AASM_N1)=='FALSE',])
+# 
+# mdl7c=lm('Correct_Diff~1+SleepEdison+PowDeltaN+PowThetaAlpha',data[is.na(data$AASM_N1)=='FALSE',])
+# anova(mdl1c,mdl7c, test = "Chisq")
+# 
+# mdl8c=lm('Correct_Diff~1+SleepEdison+PowSlope+PowBG',data[is.na(data$AASM_N1)=='FALSE',])
+# anova(mdl1c,mdl8c, test = "Chisq")
+
+```
+
+```{r}
+mdl1b=glm('InsightPost~1+SleepEdison',family='binomial',data[is.na(data$LSdens)=='FALSE',])
+
+mdl7=glm('InsightPost~1+SleepEdison+LSdens',family='binomial',data[is.na(data$LSdens)=='FALSE',])
+anova(mdl1b,mdl7, test = "Chisq")
+
+mdl8=glm('InsightPost~1+SleepEdison+LSdens+LSamp+LSdslp+LSuslp',family='binomial',data[is.na(data$LSdens)=='FALSE',])
+anova(mdl1b,mdl8, test = "Chisq")
+
+
+```
