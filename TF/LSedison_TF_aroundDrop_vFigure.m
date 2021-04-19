@@ -154,7 +154,7 @@ ylims=[-0.55 1.65; -4 0; -2 1];
 TitleFreqs={'\delta','\theta','\alpha','\sigma'};
 
 COI=2;
-figure; set(gcf,'Position',[57   338   650   349]);
+figure; set(gcf,'Position',[57   338   400   349]);
 % for nF=1:size(Freqs,1)
 %     subplot(1,3,nF);
 nF=1;

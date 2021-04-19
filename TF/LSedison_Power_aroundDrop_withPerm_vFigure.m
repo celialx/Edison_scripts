@@ -197,7 +197,7 @@ DeltaAfter_perm=mean(log10(AfterDrop_perm(:,faxis>1 & faxis<4)),2);
 
 figure; set(gcf,'position',[440   378   303   420]);
 hold on;
-Pos=1; data=DeltaBefore; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
+Pos=1; data=DeltaBefore; widthLine=2; widthBar=1.6; sizeDot=400; markerType='o';
 colorBar=[.8 .8 .8;0 0 0];
 line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,25),'Color',colorBar(2,:),'LineWidth',widthLine)
 line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,75),'Color',colorBar(2,:),'LineWidth',widthLine)
@@ -208,11 +208,11 @@ line([Pos+0.1*widthBar Pos+0.1*widthBar],[prctile(data,25) prctile(data,75)],'Co
 patch([Pos-0.1*widthBar Pos+0.1*widthBar Pos+0.1*widthBar Pos-0.1*widthBar Pos-0.1*widthBar]',...
     [prctile(data,25) prctile(data,25) prctile(data,75) prctile(data,75) prctile(data,25)]',colorBar(1,:),'FaceAlpha',0.5,'EdgeColor','none');
 
-xspread=(rand(1,length(data))-0.5)*widthBar/8+Pos-0.3;
+xspread=(rand(1,length(data))-0.5)*widthBar/8+Pos-0.4;
 scatter(xspread,data,'Marker',markerType,'MarkerFaceColor',colorBar(1,:),'MarkerEdgeColor',colorBar(2,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
  
             
-Pos=2; data=DeltaBefore_perm; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
+Pos=2; data=DeltaBefore_perm; widthLine=2; widthBar=1.6; sizeDot=400; markerType='o';
 colorBar=[.4 .4 .4;0 0 0];
 line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,25),'Color',colorBar(2,:),'LineWidth',widthLine)
 line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,75),'Color',colorBar(2,:),'LineWidth',widthLine)
@@ -223,12 +223,12 @@ line([Pos+0.1*widthBar Pos+0.1*widthBar],[prctile(data,25) prctile(data,75)],'Co
 patch([Pos-0.1*widthBar Pos+0.1*widthBar Pos+0.1*widthBar Pos-0.1*widthBar Pos-0.1*widthBar]',...
     [prctile(data,25) prctile(data,25) prctile(data,75) prctile(data,75) prctile(data,25)]',colorBar(1,:),'FaceAlpha',0.5,'EdgeColor','none');
 
-xspread=(rand(1,length(data))-0.5)*widthBar/8+Pos-0.3;
+xspread=(rand(1,length(data))-0.5)*widthBar/8+Pos-0.4;
 scatter(xspread,data,'Marker',markerType,'MarkerFaceColor',colorBar(1,:),'MarkerEdgeColor',colorBar(2,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
 
 format_fig;
 set(gca,'XTick',1:2,'XTickLabel',{'real','perm'});
-xlim([0.2 2.8])
+xlim([0.2 2.5])
 ylabel('Delta Power Before Drop')
 
 export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_DeltaPower_AvBeforeDrop.eps'],'-r 300')
