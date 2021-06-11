@@ -8,10 +8,12 @@ addpath(genpath(path_raincloud));
 path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
 addpath(genpath(path_LSCPtools));
 
-data_path='/Users/tand0009/Data/LS_Edison/';
 save_path='/Users/tand0009/Data/LS_Edison/LocalSleep';
 % data_path='/Volumes/shared/R-MNHS-SPP/Bellgrove-data/Jess Barnes EEG Backup Data/EEG_CTET/';
-files=dir([data_path filesep '*' filesep '*.edf']);
+data_path='/Users/tand0009/Data/LS_Edison/EDF_fixed';
+files=dir([data_path filesep '*.edf']);
+
+data_clean=readtable('../Edison_Tables/Clean_Data_SS.txt');
 
 %% INFO FROM CELIA
 % - le fichier EDF: attention on enregistrait l'intégralité de l'expérience donc la pause ne commence normalement pas au début de l'enregistrement (sauf si on a oublié de lancer l'enregistrement au tout début...!)
@@ -20,7 +22,8 @@ files=dir([data_path filesep '*' filesep '*.edf']);
 
 %% Extract all drop timings
 all_time_drops=[];
-totPerm=1000;
+all_Transitions=[];
+totPerm=100;
 for nF=1:length(files)
     File_Name=files(nF).name;
     Folder_Name=files(nF).folder;
@@ -31,7 +34,8 @@ for nF=1:length(files)
         warning('matrix file missing');
         continue;
     end
-    load([Folder_Name filesep 'T_' SubdID '.mat'])
+     fprintf('... processing %s (%g/%g)\n',File_Name,nF,length(files));
+   load([Folder_Name filesep 'T_' SubdID '.mat'])
     %     figure;
     ASSM_Score=T.Stade;
     Beg_Task=T.TimeID(find(T.Start(:,1)));
@@ -39,7 +43,17 @@ for nF=1:length(files)
     ASSM_Score=ASSM_Score(T.TimeID>=Beg_Task & T.TimeID<=End_Task);
     ASSM_Score_Time=T.TimeID(T.TimeID>=Beg_Task & T.TimeID<=End_Task);
     
+    this_line=match_str(data_clean.Sujet,SubdID);
+    if isempty(this_line)
+        Insigth=NaN;
+        SleepG=NaN;
+    else
+        Insigth=data_clean.InsightPost(this_line);
+        SleepG=data_clean.SleepEdison(this_line);
+    end
     drops=find(T.Ball(:,1));
+    
+    all_Transitions=[all_Transitions ; [Insigth SleepG ~isempty(drops) sum(diff(ASSM_Score)~=0) sum(diff(ASSM_Score)~=0 & ASSM_Score(2:end)==1) sum(diff(ASSM_Score)~=0 & ASSM_Score(2:end)==2)]];
     if ~isempty(drops)
         drop_indexes=T.Epoch(find(T.Ball(:,1)))-1;
         

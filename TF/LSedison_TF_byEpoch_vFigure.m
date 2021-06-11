@@ -3,29 +3,31 @@ clear all
 close all
 
 % Fieldtrip
-path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
+path_fieldtrip='/Users/thandrillon/Work/local/fieldtrip/';
 addpath(path_fieldtrip);
 ft_defaults;
 
 % Thomas' toolkit
 
 % FOOOF
-fooof_path='/Users/tand0009/WorkGit/projects/ext/fooof_mat/';
+fooof_path='/Users/thandrillon/WorkGit/projects/ext/fooof_mat/';
 f_range = [2, 30];
 settings = struct();  % Use defaults
 addpath(genpath(fooof_path));
 
-path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
+path_LSCPtools='/Users/thandrillon/WorkGit/LSCPtools/';
 addpath(genpath(path_LSCPtools));
 
-data_path='/Users/tand0009/Data/LS_Edison/EDF_fixed';
+data_path='/Users/thandrillon/Data/LS_Edison/EDF_fixed';
 files=dir([data_path filesep '*.edf']);
 
-ColorsGroup=[55 179 111;
-    115 191 181;
-    50 116 130]/256;
+path_export='/Users/thandrillon/Work/local/export_fig/';
+addpath(genpath(path_export));
+ColorsGroup=[93 175 117;
+    133 189 181;
+    67 115 128]/256;
 
-ColorsSolver=[206 144 45 ; 192 50 2]/256;
+ColorsSolver=[196 146 46 ; 177 68 22]/256;
 % % Wake = 55 179 111
 % % N1 = 115 191 181
 % % N2 = 50 116 130
@@ -490,15 +492,16 @@ for nFreq=1:size(Freqs,1)
         cmap(nFreq*4,:),'EdgeColor',cmap(nFreq*4,:),'FaceAlpha',0.5);
 end
 
+ColorsGroup2=ColorsGroup([1 3],:);
 set(gcf,'Position',[1     1   460   804]);
 hp=[];
 for nCond=1:2
     for nCond2=1:2
         temp_toplot=squeeze(FOOOF_Pow_allE(ismember(All_Conds,myConds{nCond}) & All_Insight==(nCond2-1),3,:));
         if nCond2==1
-            hp(end+1)=plot(freqs2,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
+            hp(end+1)=plot(freqs2,nanmean(temp_toplot),'Color',ColorsGroup2(nCond,:),'LineWidth',3,'LineStyle','--');
         else
-            hp(end+1)=plot(freqs2,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3);
+            hp(end+1)=plot(freqs2,nanmean(temp_toplot),'Color',ColorsGroup2(nCond,:),'LineWidth',3);
         end
     end
 end
@@ -509,7 +512,7 @@ ylabel('Power (dB)')
 % 
 
 scatter(myfreqs(find(realpos_lin2{2}.clusters2)),-0.22*ones(1,length(find(realpos_lin2{2}.clusters2))),'Marker','s','MarkerEdgeColor',[1 0 0]*0.9,'MarkerFaceColor',[1 0 0]*0.9,'SizeData',64);
-scatter(myfreqs(find(realpos_quad2{2}.clusters2)),-0.2*ones(1,length(find(realpos_quad2{2}.clusters2))),'Marker','o','MarkerEdgeColor',[1 0 0]*0.3,'MarkerFaceColor',[1 0 0]*0.3,'SizeData',64);
+scatter(myfreqs(find(realpos_quad2{2}.clusters2)),-0.2*ones(1,length(find(realpos_quad2{2}.clusters2))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k','SizeData',64);
 
 % scatter(myfreqs(find(realpos_lin{1}.clusters)), 1.08*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor',[1 1 1]*0.2,'MarkerFaceColor',[1 1 1]*0.2);
 % scatter(myfreqs(find(realpos_quad{1}.clusters)),1.10*ones(1,length(find(realpos_quad{1}.clusters))),'Marker','o','MarkerEdgeColor',[1 1 1]*0.5,'MarkerFaceColor',[1 1 1]*0.5);
@@ -536,9 +539,9 @@ for nFreq=1
             hold on;
             Pos=2*nCond2+0.2*(2*nCond-3); data=temp_toplot; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
             if nCond2==1
-                colorBar=[ColorsGroup(nCond,:) ;ColorsGroup(nCond,:)];
+                colorBar=[ColorsGroup2(nCond,:) ;ColorsGroup2(nCond,:)];
             else
-                colorBar=[ColorsGroup(nCond,:) ; 0 0 0];
+                colorBar=[ColorsGroup2(nCond,:) ; 0 0 0];
             end
             line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,25),'Color',colorBar(2,:),'LineWidth',widthLine)
             line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,75),'Color',colorBar(2,:),'LineWidth',widthLine)
@@ -574,9 +577,9 @@ for nFreq=2
             hold on;
             Pos=2*nCond2+0.2*(2*nCond-3); data=temp_toplot; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
             if nCond2==1
-                colorBar=[ColorsGroup(nCond,:) ;ColorsGroup(nCond,:)];
+                colorBar=[ColorsGroup2(nCond,:) ;ColorsGroup2(nCond,:)];
             else
-                colorBar=[ColorsGroup(nCond,:) ; 0 0 0];
+                colorBar=[ColorsGroup2(nCond,:) ; 0 0 0];
             end
             line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,25),'Color',colorBar(2,:),'LineWidth',widthLine)
             line([Pos-0.1*widthBar Pos+0.1*widthBar],[1 1].*prctile(data,75),'Color',colorBar(2,:),'LineWidth',widthLine)
@@ -614,46 +617,59 @@ for nplot=1:2
     elseif nplot==2
         tempX=nanzscore(data_clean.PowAlpha);
     end
-    %     tempY=data_clean.RT_fromAha-data_clean.RT_beforeAha;
+%         tempY=data_clean.RT_fromAha-data_clean.RT_beforeAha;
     tempY=data_clean.InsightPost;
+    tempC=double(data_clean.SleepGroup~='0')+1;
+    tempX(isnan(tempC))=[];
+    tempY(isnan(tempC))=[];
+    tempC(isnan(tempC))=[];
     
     bins=prctile(tempX,0:stepbin:100);
     bin_values=[];
     bin_values{1,1}=(tempX(tempX<bins(2)));
     bin_values{1,2}=(tempY(tempX<bins(2)));
+    bin_values{1,3}=(tempC(tempX<bins(2)));
     for k=2:length(bins)-2
         bin_values{k,1}=(tempX(tempX>=bins(k) & tempX<=bins(k+1)));
         bin_values{k,2}=(tempY(tempX>=bins(k) & tempX<=bins(k+1)));
+        bin_values{k,3}=(tempC(tempX>=bins(k) & tempX<=bins(k+1)));
     end
     bin_values{length(bins)-1,1}=(tempX(tempX>bins(length(bins)-1)));
     bin_values{length(bins)-1,2}=(tempY(tempX>bins(length(bins)-1)));
+    bin_values{length(bins)-1,3}=(tempC(tempX>bins(length(bins)-1)));
     
     bin_values2=[];
     bin_values_sem=[];
     for kbin=1:size(bin_values,1)
         Pos=kbin; data=bin_values{kbin,2}; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
-        colorBar=[.5 .5 .5; 0 0 0];
-        
-      
+        %         colorBar=[.5 .5 .5; 0 0 0];
+        colorBar=[];
+        for l=1:length(bin_values{kbin,3})
+            if isnan(bin_values{kbin,3}(l))
+                colorBar(l,:)=[0.5 0.5 0.5];
+            else
+                colorBar(l,:)=ColorsGroup2(bin_values{kbin,3}(l),:);
+            end
+        end
         xspread=(rand(1,length(data))-0.5)*widthBar/5+Pos;
         yspread=(rand(1,length(data))-0.5)*widthBar/10+data';
-        scatter(xspread,yspread,'Marker',markerType,'MarkerFaceColor',colorBar(1,:),'MarkerEdgeColor',colorBar(2,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+        scatter(xspread',yspread',[],colorBar,'filled','Marker',markerType,'MarkerFaceAlpha',0.75,'SizeData',sizeDot/3);
         
         bin_values2(kbin,1)=mean(data);
         bin_values_sem(kbin,1)=sem(data);
     end
-       errorbar(1:length(bins)-1,bin_values2(:,1),-bin_values_sem(:,1),+bin_values_sem(:,1),'Color','k','LineWidth',3);
+    errorbar(1:length(bins)-1,bin_values2(:,1),-bin_values_sem(:,1),+bin_values_sem(:,1),'Color','k','LineWidth',3);
     scatter(1:length(bins)-1,bin_values2(:,1),'Marker','o','SizeData',244,'MarkerFaceColor',[1 1 1]*0.7,'MarkerEdgeAlpha',.7,'MarkerEdgeColor','k','LineWidth',3);
-
+    
     %     ylim([0 0.8])
     xlim([0.5 length(bins)-1+0.5])
     ylim([-0.08 1.08])
     set(gca,'XTick',1:length(bins),'XColor','k','YColor','k'); %,'XTickLabel',{'low','med','high'});
-%     title(titlePlots{nplot})
+    %     title(titlePlots{nplot})
     ylabel('Insight','Color','k')
     xlabel({'Power Bin',titlePlots{nplot}},'Color','k')
 end
-% 
+%
 
 
 export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_InsightEffect_BinPlot.eps'],'-r 300')

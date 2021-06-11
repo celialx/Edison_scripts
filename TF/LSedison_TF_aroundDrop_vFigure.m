@@ -117,6 +117,18 @@ for nF=1:length(files)
                 end
             end
         end
+        
+        
+        cfg=[];
+        cfg.trialfun             = 'LSedison_trialfun_drops';
+        cfg.dataset             = [Folder_Name filesep  File_Name];
+        cfg.trialdef.prestim    = 2*60;
+        cfg.trialdef.poststim   = .5*60;
+        cfg.demean          = 'yes';
+        cfg.T               = T;
+        cfg = ft_definetrial(cfg);
+        cfg.channel={'Fp1-A2','C3-A2','O1-A2'};
+        data                   = ft_preprocessing(cfg); % read raw data
     end
     %     load([save_path filesep File_Name(1:end-4) '_slowSW'],'slow_Waves','hdr','paramSW')
     

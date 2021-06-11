@@ -14,34 +14,9 @@ library(drc)
 
 
 data <- read.table("/Users/tand0009/WorkGit/projects/inprogress/Edison_scripts/TF/../Edison_Tables/Edison_Table_Pow_vFigure.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-
-
-data$PowSlopeBin[data$PowSlopeBin=='NaN']<-NA
-data$PowBGBin[data$PowBGBin=='NaN']<-NA
-data$PowDeltaBin[data$PowDeltaBin=='NaN']<-NA
-data$PowThetaBin[data$PowThetaBin=='NaN']<-NA
-data$PowAlphaBin[data$PowAlphaBin=='NaN']<-NA
-
-data<-data[is.na(data$PowDelta)==FALSE & is.na(data$PowSlopeBin)==FALSE & data$SleepGroup!="<undefined>",]
-
+data<-data[is.na(data$PowDelta)==FALSE & data$SleepGroup!="<undefined>",]
 data$SleepGroup<-as.factor(data$SleepGroup)
-
-
-data$PowSlopeBin<-as.factor(data$PowSlopeBin)
-data$PowBGBin<-as.factor(data$PowBGBin)
-data$PowDeltaBin<-as.factor(data$PowDeltaBin)
-data$PowThetaBin<-as.factor(data$PowThetaBin)
-data$PowAlphaBin<-as.factor(data$PowAlphaBin)
-
-data$PowSlopeBin<-relevel(data$PowSlopeBin,"1")
-data$PowBGBin<-relevel(data$PowBGBin,"1")
-data$PowDeltaBin<-relevel(data$PowDeltaBin,"1")
-data$PowThetaBin<-relevel(data$PowThetaBin,"1")
-data$PowAlphaBin<-relevel(data$PowAlphaBin,"2")
-
-
-#data$SleepGroup<-relevel(data$SleepGroup,"1")
-
+data$SleepEdison<-as.factor(data$SleepEdison)
 
 data$zPowDelta<-(data$PowDelta-mean(data$PowDelta,na.rm=TRUE))/sd(data$PowDelta,na.rm=TRUE)
 data$zPowDeltaSq<-(data$zPowDelta)^2
@@ -56,7 +31,6 @@ lm1b <- glm(InsightPost ~ 1 + PowDelta, family="binomial", data = data)
 lm2 <- glm(InsightPost ~ 1 + SleepEdison + PowDelta, family="binomial", data = data)
 lm3 <- glm(InsightPost ~ 1 + SleepEdison + PowDelta, family="binomial", data = data)
 
-lm0 <- glm(InsightPost ~ 1 , family="binomial", data = data)
 lm1b <- glm(InsightPost ~ 1 + zPowDelta , family="binomial", data = data)
 lm2b <- glm(InsightPost ~ 1 + zPowTheta, family="binomial", data = data)
 lm3b <- glm(InsightPost ~ 1 + zPowAlpha , family="binomial", data = data)
