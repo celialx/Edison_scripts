@@ -1,17 +1,31 @@
 %%
 clear all
+<<<<<<< HEAD
 % close all
 
 path_fieldtrip='/Users/thandrillon/Work/local/fieldtrip/';
 path_localsleep='/Users/thandrillon/WorkGit/projects/inprogress/wanderIM/localsleep';
+=======
+close all
+
+path_fieldtrip='/Users/tand0009/Work/local/fieldtrip/';
+path_localsleep='/Users/tand0009/WorkGit/projects/inprogress/wanderIM/localsleep';
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 addpath(path_fieldtrip);
 addpath(path_localsleep);
 ft_defaults;
 
+<<<<<<< HEAD
 path_LSCPtools='/Users/thandrillon/WorkGit/LSCPtools/';
 addpath(genpath(path_LSCPtools));
 
 data_path='/Users/thandrillon/Data/LS_Edison/EDF_fixed';
+=======
+path_LSCPtools='/Users/tand0009/WorkGit/LSCPtools/';
+addpath(genpath(path_LSCPtools));
+
+data_path='/Users/tand0009/Data/LS_Edison/EDF_fixed';
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 files=dir([data_path filesep '*.edf']);
 
 ColorsGroup=[93 175 117;
@@ -106,9 +120,15 @@ for nF=1:length(files)
         cfg.channel      = 'all';
         cfg.method       = 'mtmconvol';
         cfg.taper        = 'hanning';
+<<<<<<< HEAD
         cfg.foi          = 1:0.2:30;                         % analysis 2 to 30 Hz in steps of .2 Hz
         cfg.t_ftimwin    = ones(length(cfg.foi),1).*6;   % length of time window = 0.5 sec
         cfg.toi          = [-50:0.2:10];                         % time
+=======
+        cfg.foi          = 0.5:0.2:30;                         % analysis 2 to 30 Hz in steps of .2 Hz
+        cfg.t_ftimwin    = ones(length(cfg.foi),1).*6;   % length of time window = 0.5 sec
+        cfg.toi          = [-60:0.2:10];                         % time
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
         cfg.keeptrials  = 'yes';
         TFRhann = ft_freqanalysis(cfg, data);
         
@@ -188,9 +208,15 @@ for nF=1:length(files)
             cfg.channel      = 'all';
             cfg.method       = 'mtmconvol';
             cfg.taper        = 'hanning';
+<<<<<<< HEAD
             cfg.foi          = 1:0.2:30;                         % analysis 2 to 30 Hz in steps of .2 Hz
             cfg.t_ftimwin    = ones(length(cfg.foi),1).*6;   % length of time window = 0.5 sec
             cfg.toi          = [-50:0.2:10];                         % time
+=======
+            cfg.foi          = 0.5:0.2:30;                         % analysis 2 to 30 Hz in steps of .2 Hz
+            cfg.t_ftimwin    = ones(length(cfg.foi),1).*6;   % length of time window = 0.5 sec
+            cfg.toi          = [-60:0.2:10];                         % time
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
             cfg.keeptrials  = 'yes';
             TFRhann_perm = ft_freqanalysis(cfg, data_perm);
             
@@ -221,7 +247,24 @@ for nF=1:length(files)
 end
 %     load([save_path filesep File_Name(1:end-4) '_slowSW'],'slow_Waves','hdr','paramSW')
 
+<<<<<<< HEAD
 
+=======
+%%
+SumDrops=[];
+for nF=1:length(all_Files)
+    thisF=match_str(data_clean.Sujet,all_Files{nF});
+    if ~isempty(thisF)
+        if data_clean.InsightPre(thisF)
+        SumDrop(nF)=NaN;
+        else
+        SumDrop(nF)=sum(~isnan(table2array(data_clean(thisF,51:54))));
+        end
+    else
+        SumDrops(nF)=NaN;
+    end
+end
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 
 %%
 freqs=TFRhann.freq;
@@ -248,6 +291,7 @@ times=TFRhann.time;
 % h=simpleTFplot(temp_toplot,freqs,times,0,0);
 % % caxis([-4 4])
 % colorbar;
+<<<<<<< HEAD
 %% Count Drops per used Files
 for nF=1:length(all_Files)
     thisL=match_str(data_clean.Sujet,all_Files{nF});
@@ -260,6 +304,19 @@ end
 %%
 Freqs=[1 4; 4 8; 8 12];
 ylims=[-1.4 1; -4 0; -2 1];
+=======
+
+%%
+figure
+temp_toplot=squeeze(mean(all_TF_drops(~isnan(SumDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),times>-50),3))-...
+    squeeze(mean(all_TF_drops_perm(~isnan(SumDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),times>-50),3));
+simpleTplot(times(times>-50),temp_toplot,0,'k',[2 0.05 0.05 1000],'-',0.5,1,10,1,1);
+
+
+%%
+Freqs=[1 4; 4 8; 8 12];
+ylims=[-1.4 1.2; -4 0; -2 1];
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 TitleFreqs={'\delta','\theta','\alpha','\sigma'};
 
 COI=3;
@@ -268,10 +325,17 @@ figure; set(gcf,'Position',[57   338   400   349]);
 %     subplot(1,3,nF);
 nF=1;
 FOI=Freqs(nF,:);
+<<<<<<< HEAD
 temp_toplot=squeeze(mean(all_TF_drops(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 simpleTplot(times,temp_toplot,0,'k',0,'-',0.5,1,10,1,1);
 
 temp_toplot=squeeze(mean(all_TF_drops_perm(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+=======
+temp_toplot=squeeze(mean(all_TF_drops(~isnan(SumDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+simpleTplot(times,temp_toplot,0,'k',0,'-',0.5,1,10,1,1);
+
+temp_toplot=squeeze(mean(all_TF_drops_perm(~isnan(SumDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 plot(times,mean(temp_toplot,1),'Color',[1 1 1]*0.4,'LineStyle','-','LineWidth',3);
 plot(times,mean(temp_toplot,1)+sem(temp_toplot,1),'Color',[1 1 1]*0.8,'LineStyle','--','LineWidth',2);
 plot(times,mean(temp_toplot,1)-sem(temp_toplot,1),'Color',[1 1 1]*0.8,'LineStyle','--','LineWidth',2);
@@ -290,7 +354,11 @@ xlabel('Time from Drop (s)')
 ylabel('Power (dB)')
 % title(TitleFreqs{nF})
 line([0 0],ylims,'Color',[1 1 1]*.7,'LineStyle','--');
+<<<<<<< HEAD
 
+=======
+set(gca,'LineWidth',2);
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 % end
 %  hold on;
 %  temp_toplot=squeeze(mean(all_TF_drops(StageDrop==0,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
@@ -298,6 +366,7 @@ line([0 0],ylims,'Color',[1 1 1]*.7,'LineStyle','--');
 %  temp_toplot=squeeze(mean(all_TF_drops(StageDrop~=0,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 %  simpleTplot(times,temp_toplot,0,'b',0,'-',0.5,1,0,1,1);
 %
+<<<<<<< HEAD
 
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_TimePlot_v2.eps'],'-r 300')
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_TimePlot_v2.png'],'-r 300')
@@ -308,6 +377,12 @@ figure
 temp_toplot=squeeze(mean(all_TF_drops(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),times>-50),3))-...
     squeeze(mean(all_TF_drops_perm(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),times>-50),3));
 simpleTplot(times(times>-50),temp_toplot,0,'k',[2 0.05 0.05 1000],'-',0.5,1,10,1,1);
+=======
+line([-19.801 -0.602],[1 1]*ylims(1,2),'LineWidth',2,'Color','k');
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_TimePlot_v2.eps'],'-r 300')
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_TimePlot_v2.png'],'-r 300')
+
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 
 
 %% Linear fit
@@ -318,8 +393,13 @@ vec_power=[];
 vec_time=[];
 coeff_polyfit{1}=[];
 coeff_polyfit{2}=[];
+<<<<<<< HEAD
 temp_toplot=squeeze(mean(all_TF_drops(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
 temp_toplot_perm=squeeze(mean(all_TF_drops_perm(~isnan(numDrops),COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+=======
+temp_toplot=squeeze(mean(all_TF_drops(:,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+temp_toplot_perm=squeeze(mean(all_TF_drops_perm(:,COI,freqs>=FOI(1) & freqs<=FOI(2),:),3));
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 for k=1:size(temp_toplot,1)
     vec_power=[vec_power temp_toplot(k,times>begWinSlop & times<-2)];
     vec_time=[vec_time times(times>begWinSlop & times<-2)];
@@ -338,7 +418,11 @@ pV_slope=[];
 format_fig;
 StageDrop2=StageDrop(:,2);
 for nCond=1:2
+<<<<<<< HEAD
     temp_toplot=coeff_polyfit{nCond}(:,1);
+=======
+    temp_toplot=coeff_polyfit{nCond}(~isnan(SumDrops),1);
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     [pV_slope(nCond)]=signrank(temp_toplot,0);
     %%%%% Plot
     hold on;
@@ -359,18 +443,28 @@ for nCond=1:2
         [prctile(data,25) prctile(data,25) prctile(data,75) prctile(data,75) prctile(data,25)]',colorBar(1,:),'FaceAlpha',0.5,'EdgeColor','none');
     
     if nCond==1
+<<<<<<< HEAD
         xspread=(rand(1,length(data(StageDrop2(~isnan(numDrops))==0)))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
         scatter(xspread,data(StageDrop2(~isnan(numDrops))==0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(1,:),'MarkerEdgeColor',ColorsGroup(1,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
         
         
         xspread=(rand(1,length(data(StageDrop2(~isnan(numDrops))~=0)))-0.5)*widthBar/6+nCond+0.2+2.5*0.1*widthBar;
         scatter(xspread,data(StageDrop2(~isnan(numDrops))~=0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(3,:),'MarkerEdgeColor',ColorsGroup(3,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+=======
+        xspread=(rand(1,length(data(StageDrop2(~isnan(SumDrops))==0)))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
+        scatter(xspread,data(StageDrop2(~isnan(SumDrops))==0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(1,:),'MarkerEdgeColor',ColorsGroup(1,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+        
+        
+        xspread=(rand(1,length(data(StageDrop2(~isnan(SumDrops))~=0)))-0.5)*widthBar/6+nCond+0.2+2.5*0.1*widthBar;
+        scatter(xspread,data(StageDrop2(~isnan(SumDrops))~=0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(3,:),'MarkerEdgeColor',ColorsGroup(3,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     else
         xspread=(rand(1,length(data))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
         scatter(xspread,data,'Marker',markerType,'MarkerFaceColor',colorBar(1,:),'MarkerEdgeColor',colorBar(2,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
     end
 end
 xlim([.5 2.8])
+<<<<<<< HEAD
 set(gca,'XTick',1:2,'XTickLabel',{'Real','Perm'})
 ylabel('Linear Fit - Slope Delta Before Drop')
 line(xlim,[0 0],'Color','k','LineStyle','--');
@@ -379,6 +473,17 @@ line(xlim,[0 0],'Color','k','LineStyle','--');
 % 
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_Slope_v2.eps'],'-r 300')
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_Slope_v2.png'],'-r 300')
+=======
+ylim([-3     2.2])
+set(gca,'XTick',1:2,'XTickLabel',{'Real','Perm'},'LineWidth',2)
+ylabel('Linear Fit - Slope Delta Before Drop')
+line(xlim,[0 0],'Color','k','LineStyle','--');
+
+[pV_slope(3)]=signrank(coeff_polyfit{1}((~isnan(SumDrops)),1),coeff_polyfit{2}((~isnan(SumDrops)),1));
+
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_Slope_v2.eps'],'-r 300')
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_DeltaPower_Slope_v2.png'],'-r 300')
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 
 % A=[coeff_polyfit{1}(:,1) ; coeff_polyfit{2}(:,1)];
 % B=[[zeros(size(coeff_polyfit{1},1),1) ; ones(size(coeff_polyfit{1},1),1)] [StageDrop2 ; nan(size(coeff_polyfit{1},1),1)]];
@@ -391,9 +496,15 @@ format_fig;
 StageDrop2=StageDrop(:,2);
 for nCond=1:2
     if nCond==1
+<<<<<<< HEAD
         temp_toplot=100*sum(PptionSleep_after(~isnan(numDrops),2:3),2);
     else
         temp_toplot=100*sum(PptionSleep_after_perm(~isnan(numDrops),2:3),2);
+=======
+        temp_toplot=100*sum(PptionSleep_after((~isnan(SumDrops)),2:3),2);
+    else
+        temp_toplot=100*sum(PptionSleep_after_perm((~isnan(SumDrops)),2:3),2);
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     end
     [pV_post(nCond)]=signrank(temp_toplot,0);
     %%%%% Plot
@@ -415,17 +526,27 @@ for nCond=1:2
         [prctile(data,25) prctile(data,25) prctile(data,75) prctile(data,75) prctile(data,25)]',colorBar(1,:),'FaceAlpha',0.5,'EdgeColor','none');
     
     if nCond==1
+<<<<<<< HEAD
         xspread=(rand(1,length(data(StageDrop2(~isnan(numDrops))==0)))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
         scatter(xspread,data(StageDrop2(~isnan(numDrops))==0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(1,:),'MarkerEdgeColor',ColorsGroup(1,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
         
         
         xspread=(rand(1,length(data(StageDrop2(~isnan(numDrops))~=0)))-0.5)*widthBar/6+nCond+0.2+2.5*0.1*widthBar;
         scatter(xspread,data(StageDrop2(~isnan(numDrops))~=0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(3,:),'MarkerEdgeColor',ColorsGroup(3,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+=======
+        xspread=(rand(1,length(data(StageDrop2(~isnan(SumDrops))==0)))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
+        scatter(xspread,data(StageDrop2(~isnan(SumDrops))==0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(1,:),'MarkerEdgeColor',ColorsGroup(1,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+        
+        
+        xspread=(rand(1,length(data(StageDrop2(~isnan(SumDrops))~=0)))-0.5)*widthBar/6+nCond+0.2+2.5*0.1*widthBar;
+        scatter(xspread,data(StageDrop2(~isnan(SumDrops))~=0),'Marker',markerType,'MarkerFaceColor',ColorsGroup(3,:),'MarkerEdgeColor',ColorsGroup(3,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     else
         xspread=(rand(1,length(data))-0.5)*widthBar/6+nCond+2.5*0.1*widthBar;
         scatter(xspread,data,'Marker',markerType,'MarkerFaceColor',colorBar(1,:),'MarkerEdgeColor',colorBar(2,:),'MarkerFaceAlpha',0.5,'SizeData',sizeDot/4);
     end
 end
+<<<<<<< HEAD
     [pV_post(3)]=signrank(sum(PptionSleep_after(:,2:3),2),sum(PptionSleep_after_perm(:,2:3),2));
 
     xlim([.5 2.8])
@@ -435,6 +556,17 @@ line(xlim,[0 0],'Color','k','LineStyle','--');
 
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_PostDrop_SleepPption.eps'],'-r 300')
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_PostDrop_SleepPption.png'],'-r 300')
+=======
+    [pV_post(3)]=signrank(sum(PptionSleep_after((~isnan(SumDrops)),2:3),2),sum(PptionSleep_after_perm((~isnan(SumDrops)),2:3),2));
+
+    xlim([.5 2.8])
+set(gca,'XTick',1:2,'XTickLabel',{'Real','Perm'},'LineWidth',2)
+ylabel('Ption Sleep Post Drop')
+line(xlim,[0 0],'Color','k','LineStyle','--');
+
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_PostDrop_SleepPption.eps'],'-r 300')
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_AroundDrop_PostDrop_SleepPption.png'],'-r 300')
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 
 A2=[sum(PptionSleep_after(:,2:3),2) ; sum(PptionSleep_after_perm(:,2:3),2)];
 B2=[[zeros(size(coeff_polyfit{1},1),1) ; ones(size(coeff_polyfit{1},1),1)] [StageDrop2 ; nan(size(coeff_polyfit{1},1),1)]];
@@ -468,7 +600,11 @@ for nCond=1:2
     end
 end
 xlim([.5 2.5])
+<<<<<<< HEAD
 set(gca,'XTick',1:2,'XTickLabel',{'N1','N2'})
+=======
+set(gca,'XTick',1:2,'XTickLabel',{'N1','N2'},'LineWidth',2)
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 ylabel('Ption Post Drop')
 line(xlim,[0 0],'Color','k','LineStyle','--');
 format_fig;
@@ -519,3 +655,24 @@ format_fig;
 [pV_Ins2(1)]=ranksum(all_toplots{1,1},all_toplots{1,2});
 [pV_Ins2(2)]=ranksum(all_toplots{2,1},all_toplots{2,2});
 
+<<<<<<< HEAD
+=======
+
+%%
+figure;
+set(gcf,'Position',[ 287   325   350   419]);
+hold on;
+bar(1,36.67,'BarWidth',0.65,'FaceColor','k','EdgeColor','k','LineWidth',3);
+bar(2,61.7,'BarWidth',0.65,'FaceColor',[1 1 1]*0.7,'EdgeColor','k','LineWidth',3);
+bar(3,22.5,'BarWidth',0.65,'FaceColor',[1 1 1]*1,'EdgeColor','k','LineWidth',3);
+
+xlim([.2 3.8])
+ylim([0 80])
+set(gca,'XTick',1:3,'XTickLabel',{'N1','Drop','ø Drop'},'XColor','k','YColor','k','LineWidth',2)
+ylabel('Hypnagogia (%)')
+line([1.5 1.5],ylim,'Color','k','LineStyle',':','LineWidth',2);
+format_fig;
+
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_Hypngogia.eps'],'-r 300')
+export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_Hypngogia.png'],'-r 300')
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656

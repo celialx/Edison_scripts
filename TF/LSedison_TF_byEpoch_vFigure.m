@@ -21,7 +21,11 @@ addpath(genpath(path_LSCPtools));
 data_path='/Users/thandrillon/Data/LS_Edison/EDF_fixed';
 files=dir([data_path filesep '*.edf']);
 
+<<<<<<< HEAD
 path_export='/Users/thandrillon/Work/local/export_fig/';
+=======
+path_export='/Users/tand0009/Work/local/export_fig/';
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 addpath(genpath(path_export));
 ColorsGroup=[93 175 117;
     133 189 181;
@@ -510,6 +514,7 @@ format_fig;
 xlim([2 20])
 ylabel('Power (dB)')
 % 
+set(gca,'LineWidth',2);
 
 scatter(myfreqs(find(realpos_lin2{2}.clusters2)),-0.22*ones(1,length(find(realpos_lin2{2}.clusters2))),'Marker','s','MarkerEdgeColor',[1 0 0]*0.9,'MarkerFaceColor',[1 0 0]*0.9,'SizeData',64);
 scatter(myfreqs(find(realpos_quad2{2}.clusters2)),-0.2*ones(1,length(find(realpos_quad2{2}.clusters2))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k','SizeData',64);
@@ -557,7 +562,7 @@ for nFreq=1
         end
     end
     xlim([.5 5.5])
-    set(gca,'XTick',[2 4],'XTickLabel',{'NO','YES'})
+    set(gca,'XTick',[2 4],'XTickLabel',{'NO','YES'},'LineWidth',2)
     ylabel(sprintf('z(Power %s)',TitleFreqs{nFreq}))
     xlabel('Insight')
 end
@@ -595,7 +600,7 @@ for nFreq=2
         end
     end
     xlim([.5 5.5])
-    set(gca,'XTick',[2 4],'XTickLabel',{'NO','YES'})
+    set(gca,'XTick',[2 4],'XTickLabel',{'NO','YES'},'LineWidth',2)
     ylabel(sprintf('z(Power %s)^2',TitleFreqs{nFreq}))
     xlabel('Insight')
 end
@@ -664,10 +669,14 @@ for nplot=1:2
     %     ylim([0 0.8])
     xlim([0.5 length(bins)-1+0.5])
     ylim([-0.08 1.08])
+<<<<<<< HEAD
     set(gca,'XTick',1:length(bins),'XColor','k','YColor','k'); %,'XTickLabel',{'low','med','high'});
+=======
+    set(gca,'XTick',1:length(bins),'XColor','k','YColor','k','LineWidth',2); %,'XTickLabel',{'low','med','high'});
+>>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     %     title(titlePlots{nplot})
     ylabel('Insight','Color','k')
-    xlabel({'Power Bin',titlePlots{nplot}},'Color','k')
+    xlabel(['Power Bin ',titlePlots{nplot}],'Color','k')
 end
 %
 
