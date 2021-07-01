@@ -37,6 +37,7 @@ ParamExport_SubID=cell(0,0);
 ParamExport=[];
 
 all_maxAbs=[];
+    threshArt           = 500;
 
 for nF=1:length(files)
     %%% Select subject and file
@@ -54,6 +55,9 @@ for nF=1:length(files)
     load([Folder_Name filesep 'T_' SubdID '.mat'])
     fprintf('... processing %s\n',File_Name);
     
+    oridata=ft_read_data([Folder_Name filesep  File_Name]);
+    hdr=ft_read_header([Folder_Name filesep  File_Name]);
+
     %%% Import data, select for breaks and cut for 30s epochs
     cfg=[];
     cfg.trialfun        = 'LSinsight_trialfun_break_contepochs';
@@ -66,15 +70,22 @@ for nF=1:length(files)
     data                = ft_preprocessing(cfg); % read raw data
     hdr                 = ft_read_header([Folder_Name filesep File_Name]);
     
+    Start = find(T.Start(:,1)); Start = Start(1);
+End = find(T.End(:,1)); End = End(1);
+Beg_Task=(T.Epoch(Start)-1)*30*hdr.Fs+1;
+End_Task=T.Epoch(End)*30*hdr.Fs;
+%         figure; plot(oridata(3,Beg_Task:End_Task)); format_fig; title(File_Name)
+%     pause; close(gcf);
+    
     ParamExport=[ParamExport ; hdr.orig.PhysMin(1:3) hdr.orig.PhysMax(1:3)];
     ParamExport_SubID=[ParamExport_SubID ; {SubdID}];
     %%% Reject trials with trials above a max amplitude threshold of 150uV
     maxAbs = [];
     for k=1:length(data.trial)
         maxAbs(k,:)     = max(abs(data.trial{k}),[],2);
+%         figure; plot(data.trial{k}(3,:)); pause; close(gcf);
     end
     all_maxAbs=[all_maxAbs ; maxAbs];
-    threshArt           = 150;
     % Fait uniquement sur la troisième électrode
     if (100*mean(maxAbs(:,3)>threshArt))>50
         warning('Too much trials above Thr. Will Skip');
@@ -156,11 +167,12 @@ for nF=1:length(files)
 end
 
 %%
-Freqs=[1 3.6; 6.6 8.6; 20 30];
+Freqs=[1 3.6; 4 7; 8 12; 20 30];
 
 % Behav data;
 load([Behav_Path 'All_Data_clean']);
 
+Data.PowDelta=nan(size(Data,1),1);
 Data.PowDelta=nan(size(Data,1),1);
 Data.PowAlpha=nan(size(Data,1),1);
 Data.PowBeta=nan(size(Data,1),1);
@@ -179,8 +191,9 @@ for nS=1:length(all_Subds)
         error('not the same ID');
     end
     Data.PowDelta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(1,1) & freqs<=Freqs(1,2)),3));
-    Data.PowAlpha(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(2,1) & freqs<=Freqs(2,2)),3));
-    Data.PowBeta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(3,1) & freqs<=Freqs(3,2)),3));
+    Data.PowTheta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(2,1) & freqs<=Freqs(2,2)),3));
+    Data.PowAlpha(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(3,1) & freqs<=Freqs(3,2)),3));
+    Data.PowBeta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(4,1) & freqs<=Freqs(4,2)),3));
     %     Data.RatioAT(this_line) = Data.PowAlpha(this_line)/Data.PowTheta(this_line);
     
     if isempty(double(Data.SleepGroup(this_line)))
@@ -234,13 +247,20 @@ redo=1;
 if redo
     temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,:));
     group=[All_Conds2(~isnan(All_Conds2)) All_Memory(~isnan(All_Conds2))];
-    totperm=1000;
-    [realpos_lin realneg_lin]=get_cluster_permutation_lm(zscore(temp_power),group,{'Power','Cond','Mem'},'Power~1+Cond*Mem',0.05,0.1,totperm,faxis);
-    [realpos_quad realneg_quad]=get_cluster_permutation_lm(zscore(temp_power).^2,group,{'Power','Cond','Mem'},'Power~1+Cond*Mem',0.05,0.1,totperm,faxis);
+    totperm=100;
+    [realpos_lin realneg_lin]=get_cluster_permutation_lm(zscore(temp_power),group(:,2),{'Power','Mem'},'Power~1+Mem',0.05,0.1,totperm,faxis);
+    [realpos_quad realneg_quad]=get_cluster_permutation_lm(zscore(temp_power).^2,group(:,2),{'Power','Mem'},'Power~1+Mem',0.05,0.1,totperm,faxis);
 
-    save('result_clusterperm_Insight2_onfreq_LM','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
+%     save('result_clusterperm_Insight2_onfreq_LM','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
 else
-    load('result_clusterperm_Insight2_onfreq_LM')
+%     load('result_clusterperm_Insight2_onfreq_LM')
+end
+
+for nF=1:length(faxis)
+    temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,nF));
+    [r,pV] = corr((temp_power),group(:,2),'rows','pairwise');
+    Mem_Rval(nF)=r;
+    Mem_Pval(nF)=pV;
 end
 %%
 temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,:));
@@ -293,12 +313,12 @@ xlim([1 30])
 
 hold on;
 scatter(myfreqs(find(realpos_lin{1}.clusters)),-1+0.2*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realneg_lin{3}.clusters)),-2+2.2*ones(1,length(find(realneg_lin{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realneg_lin{3}.clusters)),-2+2.2*ones(1,length(find(realneg_lin{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 
 subplot(1,3,3);
