@@ -1,34 +1,35 @@
 %%
 clear all;close all;
 
-% Behav path
-Behav_Path = 'C:\Users\OUDIETTE.Delphine\Desktop\Insight project\Analyses\Analyses_Results\Insight_Tables\';
+run localdef_spatialInsight.m
+% % Behav path
+% Behav_Path = 'C:\Users\OUDIETTE.Delphine\Desktop\Insight project\Analyses\Analyses_Results\Insight_Tables\';
 
 % Fieldtrip
-path_fieldtrip='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\fieldtrip-master\';
+% path_fieldtrip='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\fieldtrip-master\';
 addpath(path_fieldtrip);
 ft_defaults;
 
 % FOOOF
-fooof_path='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\fooof_mat-main\';
+% fooof_path='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\fooof_mat-main\';
 f_range = [2, 30];
 settings = struct();  % Use defaults
-addpath(genpath(fooof_path));
+% addpath(genpath(fooof_path));
 
-path_LSCPtools='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\LSCPtools_new\';
+% path_LSCPtools='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\LSCPtools_new\';
 addpath(genpath(path_LSCPtools));
 
-natsort_path ='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\natsortfiles\';
-addpath(genpath(natsort_path));
+% natsort_path ='C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\natsortfiles\';
+% addpath(genpath(natsort_path));
 
-data_path='C:\Users\OUDIETTE.Delphine\Desktop\Insight project\All_Data\EEG_Insight_Analyses';
+% data_path='C:\Users\OUDIETTE.Delphine\Desktop\Insight project\All_Data\EEG_Insight_Analyses';
 files=dir([data_path filesep '*.edf']);
 
 % To sort files by filename
-files = natsortfiles(files);
+% files = natsortfiles(files);
 
 % To get pwelch function from signal toolbox
-rmpath(genpath('C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\FASST-master\'))
+% rmpath(genpath('C:\Users\OUDIETTE.Delphine\Documents\MATLAB\Toolboxs\FASST-master\'))
 
 ColorsGroup=[55 179 111;
     115 191 181;
@@ -164,7 +165,7 @@ for nF=1:length(files)
 end
 
 %%
-Freqs=[1 3.6; 6.6 8.6; 20 30];
+Freqs=[1 3.6; 9.6 10.2; 24.6 30];
 
 % Behav data;
 load([Behav_Path 'All_Data_clean']);
@@ -238,26 +239,30 @@ title({'Power Spectrum','per Group'})
 %%
 % [realpos realneg]=get_cluster_permutation_aov(squeeze(Pow_allE((~isnan(All_Conds)),3,:)),[All_Conds2(~isnan(All_Conds)) All_Memory(~isnan(All_Conds))],...
 %     0.05,0.1,100,freqs);
-redo=0;
+redo=1;
 if redo
     temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,:));
     [realpos_lin realneg_lin]=get_cluster_permutation_aov(zscore(temp_power),[All_Conds2(~isnan(All_Conds2)) All_Memory(~isnan(All_Conds2))],...
-        0.05,0.1,1000,freqs);
+        0.05,0.1,1000,freqs,'full',2);
     [realpos_quad realneg_quad]=get_cluster_permutation_aov(sqrt(zscore(temp_power).^2),[All_Conds2(~isnan(All_Conds2)) All_Memory(~isnan(All_Conds2))],...
-        0.05,0.1,1000,freqs);
-    save('result_clusterperm_Insight2_onfreq_ANOVA','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
+        0.05,0.1,1000,freqs,'full',2);
+    save('result_clusterperm_Insight2_onfreq_ANOVA_CL','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
 else
-    load('result_clusterperm_Insight2_onfreq_ANOVA')
+    load('result_clusterperm_Insight2_onfreq_ANOVA_CL')
 end
 %%
 temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,:));
 myfreqs=freqs;
-figure;
+figure; set(gcf,'Position',[1         141        1000         656]);
 subplot(1,3,1);
 hold on;
 for nCond=1:2
     for nCond2=1:2
-        temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))==(nCond2-1),:));
+        if nCond2==1
+        temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:));
+        else
+        temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:));
+        end
         if nCond2==1
             plot(myfreqs,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
         else
@@ -267,8 +272,8 @@ for nCond=1:2
 end
 xlabel('Frequency (Hz)')
 format_fig;
-xlim([1 20])
-% ylim([-1 4])
+xlim([1 30])
+ylim([-2 3])
 
 legend({'WK | NO', 'WK | YS','SL | NO','SL | YE','sleep','insight','interaction'})
 
@@ -277,7 +282,11 @@ temp_power_zscore=zscore(temp_power);
 hold on;
 for nCond=1:2
     for nCond2=1:2
-        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))==(nCond2-1),:);
+        if nCond2==1
+            temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:);
+        else
+            temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:);
+        end
         if nCond2==1
             plot(myfreqs,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
         else
@@ -287,17 +296,17 @@ for nCond=1:2
 end
 xlabel('Frequency (Hz)')
 format_fig;
-xlim([1 20])
-% ylim([-1 4])
+xlim([1 30])
+ylim([-2 3])
 
 hold on;
 scatter(myfreqs(find(realpos_lin{1}.clusters)),-1+0.2*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
 scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
 scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
-scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realneg_lin{3}.clusters)),-2+2.2*ones(1,length(find(realneg_lin{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
+% scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realneg_lin{3}.clusters)),-2+2.2*ones(1,length(find(realneg_lin{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 
 subplot(1,3,3);
@@ -305,7 +314,11 @@ temp_power_zscore=zscore(temp_power).^2;
 hold on;
 for nCond=1:2
     for nCond2=1:2
-        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))==(nCond2-1),:);
+        if nCond2==1
+        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:);
+        else
+        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:);
+        end
         if nCond2==1
             plot(myfreqs,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
         else
@@ -315,18 +328,39 @@ for nCond=1:2
 end
 xlabel('Frequency (Hz)')
 format_fig;
-xlim([1 20])
-% ylim([-1 4])
+xlim([1 30])
+ylim([-2 3])
 
 hold on;
 scatter(myfreqs(find(realpos_quad{1}.clusters)),-1+0.2*ones(1,length(find(realpos_quad{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
 scatter(myfreqs(find(realpos_quad{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_quad{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
 scatter(myfreqs(find(realpos_quad{3}.clusters)),-2+0.2*ones(1,length(find(realpos_quad{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
+% % scatter(myfreqs(find(realneg_quad{3}.clusters)),-2+2.2*ones(1,length(find(realneg_quad{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
 
-scatter(myfreqs(find(realneg_quad{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_quad{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realneg_quad{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_quad{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realneg_quad{3}.clusters)),-2+2.2*ones(1,length(find(realneg_quad{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
+%%
+for nF=1:length(faxis)
+    temp_power=squeeze(Pow_allE((~isnan(All_Conds)),3,nF));
+    [p,t,stats,terms] =anovan((temp_power),[All_Conds2(~isnan(All_Conds2)) All_Memory(~isnan(All_Conds2))],'display','off','model','interaction','continuous',2);
+    Sleep_Fval(nF)=t{2,6};
+    Sleep_Pval(nF)=t{2,7};
+    
+    Mem_Fval(nF)=t{3,6};
+    Mem_Pval(nF)=t{3,7};
+    
+    Int_Fval(nF)=t{4,6};
+    Int_Pval(nF)=t{4,7};
+    
+    [p,t,stats,terms] =anovan(zscore(temp_power).^2,[All_Conds2(~isnan(All_Conds2)) All_Memory(~isnan(All_Conds2))],'display','off','model','interaction','continuous',2);
+    Sleep_Fval2(nF)=t{2,6};
+    Sleep_Pval2(nF)=t{2,7};
+    
+    Mem_Fval2(nF)=t{3,6};
+    Mem_Pval2(nF)=t{3,7};
+    
+    Int_Fval2(nF)=t{4,6};
+    Int_Pval2(nF)=t{4,7};
+end
 %% Box plot Linear effects
 %%%% clean clusters
 realpos_quad2=realpos_quad;
@@ -401,7 +435,8 @@ hl=legend(hp,{'WK | NO', 'WK | YS','SL | NO','SL | YE'},'Position',[0.7174    0.
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_InsightEffect_TimePlot.png'],'-r 300')
 
 % Freqs=[1 4; 4 8; 8 12 ; 15 20];
-TitleFreqs={'Delta','Alpha'};
+TitleFreqs={'Alpha','Beta'};
+Freqs=[9.6000   10.2000;24.6000   30.0000];
 figure;
 set(gcf,'Position',[462     1   348   804]);
 for nFreq=1

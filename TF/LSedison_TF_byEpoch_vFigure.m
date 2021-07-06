@@ -21,11 +21,11 @@ addpath(genpath(path_LSCPtools));
 data_path='/Users/thandrillon/Data/LS_Edison/EDF_fixed';
 files=dir([data_path filesep '*.edf']);
 
-<<<<<<< HEAD
+% <<<<<<< HEAD
 path_export='/Users/thandrillon/Work/local/export_fig/';
-=======
-path_export='/Users/tand0009/Work/local/export_fig/';
->>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
+% =======
+% path_export='/Users/tand0009/Work/local/export_fig/';
+% >>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
 addpath(genpath(path_export));
 ColorsGroup=[93 175 117;
     133 189 181;
@@ -669,11 +669,11 @@ for nplot=1:2
     %     ylim([0 0.8])
     xlim([0.5 length(bins)-1+0.5])
     ylim([-0.08 1.08])
-<<<<<<< HEAD
-    set(gca,'XTick',1:length(bins),'XColor','k','YColor','k'); %,'XTickLabel',{'low','med','high'});
-=======
+% <<<<<<< HEAD
+%     set(gca,'XTick',1:length(bins),'XColor','k','YColor','k'); %,'XTickLabel',{'low','med','high'});
+% =======
     set(gca,'XTick',1:length(bins),'XColor','k','YColor','k','LineWidth',2); %,'XTickLabel',{'low','med','high'});
->>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
+% >>>>>>> 5757eba8769d25b9c6d48a73c88db32511e24656
     %     title(titlePlots{nplot})
     ylabel('Insight','Color','k')
     xlabel(['Power Bin ',titlePlots{nplot}],'Color','k')

@@ -313,10 +313,10 @@ xlim([1 30])
 
 hold on;
 scatter(myfreqs(find(realpos_lin{1}.clusters)),-1+0.2*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
-% scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
-% scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
+scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
+scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
-scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
+% scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
 % scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
 % scatter(myfreqs(find(realneg_lin{3}.clusters)),-2+2.2*ones(1,length(find(realneg_lin{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
 
@@ -349,9 +349,9 @@ scatter(myfreqs(find(realpos_quad{2}.clusters)),-1.5+0.2*ones(1,length(find(real
 scatter(myfreqs(find(realpos_quad{3}.clusters)),-2+0.2*ones(1,length(find(realpos_quad{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 
-scatter(myfreqs(find(realneg_quad{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_quad{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realneg_quad{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_quad{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realneg_quad{3}.clusters)),-2+2.2*ones(1,length(find(realneg_quad{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realneg_quad{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_quad{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
+% scatter(myfreqs(find(realneg_quad{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_quad{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realneg_quad{3}.clusters)),-2+2.2*ones(1,length(find(realneg_quad{3}.clusters))),'Marker','s','MarkerEdgeColor','r','MarkerFaceColor','r');
 %% Box plot Linear effects
 %%%% clean clusters
 realpos_quad2=realpos_quad;
@@ -426,11 +426,11 @@ hl=legend(hp,{'WK | NO', 'WK | YS','SL | NO','SL | YE'},'Position',[0.7174    0.
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_InsightEffect_TimePlot.png'],'-r 300')
 
 % Freqs=[1 4; 4 8; 8 12 ; 15 20];
-TitleFreqs={'Delta','Alpha'};
+TitleFreqs={'Alpha','Beta'};
 figure;
 set(gcf,'Position',[462     1   348   804]);
-for nFreq=1
-    subplot(size(Freqs,1),1,1);
+for nFreq=1:2
+    subplot(size(Freqs,1),1,nFreq);
     format_fig;
     for nCond=1:length(myConds)
         for nCond2=1:2
@@ -438,7 +438,11 @@ for nFreq=1
             %         temp_toplot=(temp_toplot-repmat(nanmean(temp_toplot,2),1,length(freqs)));
             temp_toplot=mean(temp_toplot(:,freqs>=Freqs(nFreq,1) & freqs<=Freqs(nFreq,2)),2);
             temp_toplot=(nanzscore(temp_toplot));
-            temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory==(nCond2-1),:);
+            if nCond2==1
+                temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory<=nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+            elseif nCond2==2
+                temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory>nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+            end
             %%%%% Plot
             hold on;
             Pos=2*nCond2+0.2*(2*nCond-3); data=temp_toplot; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
@@ -467,8 +471,10 @@ for nFreq=1
 end
 
 %%% Box plot Quadratic effects
-for nFreq=2
-    subplot(size(Freqs,1),1,2);
+figure;
+set(gcf,'Position',[462     1   348   804]);
+for nFreq=1:2
+    subplot(size(Freqs,1),1,nFreq);
     format_fig;
     for nCond=1:length(myConds)
         for nCond2=1:2
@@ -476,7 +482,11 @@ for nFreq=2
             %         temp_toplot=(temp_toplot-repmat(nanmean(temp_toplot,2),1,length(freqs)));
             temp_toplot=mean(temp_toplot(:,freqs>=Freqs(nFreq,1) & freqs<=Freqs(nFreq,2)),2);
             temp_toplot=sqrt(nanzscore(temp_toplot).^2);
-            temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory==(nCond2-1),:);
+if nCond2==1
+    temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory<=nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+else
+            temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory>nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+end
             %%%%% Plot
             hold on;
             Pos=2*nCond2+0.2*(2*nCond-3); data=temp_toplot; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
@@ -510,18 +520,18 @@ end
 figure;
 stepbin=33;
 clear bin_*
-titlePlots={'Alpha','Sigma'};
+titlePlots={'Alpha','Beta'};
 set(gcf,'Position',[462     1   348   804]);
-for nplot=1:3
-    subplot(3,1,nplot);
+for nplot=1:2
+    subplot(2,1,nplot);
     hold on;
     format_fig;
     if nplot==1
-        tempX=nanzscore(Data.PowDelta);
-    elseif nplot==2
         tempX=nanzscore(Data.PowAlpha);
-    elseif nplot ==3
+    elseif nplot==2
         tempX=nanzscore(Data.PowBeta);
+%     elseif nplot ==3
+%         tempX=nanzscore(Data.PowBeta);
         
     end
     %     tempY=Data.RT_fromAha-Data.RT_beforeAha;
@@ -560,7 +570,7 @@ for nplot=1:3
     %     ylim([-0.08 1.08])
     set(gca,'XTick',1:length(bins),'XColor','k','YColor','k'); %,'XTickLabel',{'low','med','high'});
     %     title(titlePlots{nplot})
-    ylabel('Insight','Color','k')
+    ylabel('Memory','Color','k')
     xlabel({'Power Bin',titlePlots{nplot}},'Color','k')
 end
 
@@ -569,6 +579,6 @@ end
 
 
 %%
-anovan(nanzscore(Data.PowAlpha),[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full');
-anovan(nanzscore(Data.PowSigma).^2,[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full');
+anovan(nanzscore(Data.PowAlpha).^2,[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full','continuous',2);
+anovan(nanzscore(Data.PowBeta).^2,[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full','continuous',2);
 
