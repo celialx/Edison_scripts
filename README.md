@@ -9,8 +9,8 @@ There are several main steps:
 This is a 1-by-1s table that contains all of the information of the nap (start and end timings, sleep scoring, bottle drops...). 
 You can skip this step by directly downloading the T files straight from OSF.
 
-2) If you run both scripts "Analyses_Edison_EEG" and "Anayses_Edison_Behaviour", you will generate tables with all of the necessary information needed to 
-generate behavioral figures as well as demographic data. You can also skip this step by directly downloading this table ("All_Data.mat") on OSF.
+2) If you run both scripts "Analyses_Edison_EEG_Clean" and "Anayses_Edison_Behaviour_Clean", you will generate tables with all of the necessary information needed to 
+generate behavioral figures as well as demographic data. You can also skip this step by directly downloading this table ("All_Data_Behaviour.mat") on OSF.
 
 All variable names should be self-explanatory, but here is a quick rundown of some of the more essential variables in this table:
 
