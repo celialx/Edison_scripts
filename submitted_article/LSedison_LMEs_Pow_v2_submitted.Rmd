@@ -1,0 +1,40 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(data.table)
+library(JWileymisc)
+library(lme4)
+library(lmerTest)
+#library(drc)
+
+
+data <- read.table("/Users/thandrillon/WorkGit/projects/inprogress/Edison_scripts/TF/../submitted_article/Clean_Data_SS_Pow_submitted.txt", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+data<-data[is.na(data$PowDelta)==FALSE & data$SleepGroup!="<undefined>",]
+data$SleepGroup<-as.factor(data$SleepGroup)
+data$SleepEdison<-as.factor(data$SleepEdison)
+
+data$zPowDelta<-(data$PowDelta-mean(data$PowDelta,na.rm=TRUE))/sd(data$PowDelta,na.rm=TRUE)
+data$zPowDeltaSq<-(data$zPowDelta)^2
+
+data$zPowAlpha<-(data$PowAlpha-mean(data$PowAlpha,na.rm=TRUE))/sd(data$PowAlpha,na.rm=TRUE)
+data$zPowAlphaSq<-(data$zPowAlpha)^2
+
+lm0 <- glm(InsightPost ~ 1, family="binomial", data = data)
+lm1 <- glm(InsightPost ~ 1 + SleepEdison, family="binomial", data = data)
+lm2 <- glm(InsightPost ~ 1 + SleepEdison + zPowDelta , family="binomial", data = data)
+lm3 <- glm(InsightPost ~ 1 + SleepEdison + zPowDelta + zPowDeltaSq, family="binomial", data = data)
+lm4 <- glm(InsightPost ~ 1 + SleepEdison + zPowDelta + zPowDeltaSq + zPowAlpha, family="binomial", data = data)
+lm5 <- glm(InsightPost ~ 1 + SleepEdison + zPowDelta + zPowDeltaSq + zPowAlpha + zPowAlphaSq, family="binomial", data = data)
+
+lm6 <- glm(InsightPost ~ 1 + SleepEdison + zPowDelta + zPowDeltaSq + zPowAlpha + zPowAlphaSq + meanPVT_Post+Bottle+Epworth+PercentN1Edison_Micro, family="binomial", data = data)
+
+anova(lm0,lm1,lm2,lm3,lm4,lm5,lm6)
+summary(lm6)
+```
+
+```
