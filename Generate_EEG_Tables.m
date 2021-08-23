@@ -1,11 +1,14 @@
-%% Pour ce script il faut être dans un Dossier Scripts et dans la racine de ce dossier avoir un dossier qui contient 
-%les EDF, les stades et un dossier qui contient les Evenemnts Scorés. Il
-%faut aussi avoir les fonctions suivantes dans le dossier script
+% Script to generate T matrix (one-by-one second table with sleep scoring
+% and events like bottle drops)
+
+% You need: EDF files, scoring files and evenementscores files, as well
+% as the following scripts (present in the folder
+% "Pack_Generate_EEG_Tables"):
 %            - blockEdfLoad.m
 %            - importStade.m
 %            - importfileEvent.m
-clear all
 
+clear all; close all; clc;
 
 %------------------------------------------------------------------------------------------------------
 % Path
@@ -19,8 +22,7 @@ pathT = 'C:\Users\Célia\Desktop\WagnerEdison project\Analyses_Results\T\';
 % Initialisation
 %------------------------------------------------------------------------------------------------------
 
-% 13AB for supp data on the bottle (with subjects of Insight) but remove the subject for Edison analyses
-% Il faut penser à convertir les fichiers evenementscores en csv!!
+% The "evenementscores" files need to be converted into csv first.
 
 AllSubjects = {'01HC'; '02ZB'; '03JF'; '04BS'; '05MB'; '06NJ'; '07LB'; '08CB'; '09FN'; '10OL'; '11BD'; '12TG'; '14CD'...
    ; '15CV' ; '16LK'; '17ML'; '18LW'; '19HJ'; '20JJ'; '21IH'; '22HK';'24MK'; '25DS'; '26DB'; '27JS'; '28MD'; '29AN'...
@@ -33,49 +35,44 @@ AllSubjects = {'01HC'; '02ZB'; '03JF'; '04BS'; '05MB'; '06NJ'; '07LB'; '08CB'; '
     '97AJ'; '98JB'; '99VB'; '100CP'; '101MS'; '102OB'; '103JZ'; '104MR'; '105OG';...
     '107AS'; '108JC'; '109JF'; '110SD'; '111MB'; '112GC'};
 
-
 for i_sub=1:length(AllSubjects)
 
 sujet=AllSubjects{i_sub,1};
 
-%Télécharge l'EDF
-FileName=strcat(pathEEG,sujet,'_EEG.edf'); % Télécharge l'EDF
+% Load EDF
+FileName=strcat(pathEEG,sujet,'_EEG.edf');
 [header,signalHeader,signalCell] = blockEdfLoad(FileName);
 
 %------------------------------------------------------------------------------------------------------
-% Création d'une matrice T qui contient une ligne par seconde pour toute la
-% sieste
+% Create a matrix T that contains one ligne per second for the entirety of
+% the nap
 %------------------------------------------------------------------------------------------------------
 
-% Struture de la matrice à partir de la première seconde extraite de l'EDF
-%----------------------------------------------------------------------------
-
-% Transforme le temps initial en variable h:m:s pour pouvoir remplir la matrice
+% Transform initial time into h:m:s variable to fill the matrix 
 h=str2double(header.recording_starttime(1:2));
 m=str2double(header.recording_starttime(4:5));
 s=str2double(header.recording_starttime(7:8));
 
-% Longueur de la matrice en seconde : 
+% Matrix length in second
 lenT = header.num_data_records;
 
-% Ici on définit toutes les variables que contriendra la matrice T
-Time          = cell(lenT,1); % Temps en h:m:s
-TimeID        = zeros(lenT,1); % Temps en n°
-Epoch         = zeros(lenT,1); % Le N° de l'epoch de 30 sec
-Stade         = zeros(lenT,1); % Le stade de la seconde en numero
-StadeL        = cell(lenT,1); % Le stade de la seconde en lettre
+% Define all matrix variables
+Time          = cell(lenT,1); % Time in h:m:s
+TimeID        = zeros(lenT,1); % Time in n°
+Epoch         = zeros(lenT,1); % 30s-epoch number
+Stade         = zeros(lenT,1); % Sleep scoring
+StadeL        = cell(lenT,1); % Sleep scoring (letter)
 
-N1    = zeros(lenT,1); % L'evenement 1 qui est exporté du fichier 
-Start    = zeros(lenT,1); % L'evenement 2 qui est exporté du fichier 
-End    = zeros(lenT,1); % L'evenement 3 qui est exporté du fichier 
-Ball    = zeros(lenT,1); % L'evenement 4 qui est exporté du fichier 
-% Probes    = zeros(lenT,1); % L'evenement 5 qui est exporté du fichier 
+N1    = zeros(lenT,1); % Event 1 from scoring file
+Start    = zeros(lenT,1); % Event 2 from scoring file
+End    = zeros(lenT,1); % Event 3 from scoring file
+Ball    = zeros(lenT,1); % Event 4 from scoring file
 
 SR=signalHeader.samples_in_record; % Sample rate
 
 
-% Cette boucle remplit les variables Time et Time ID en débutant depuis la
-% première seconde de l'enregristrement extraite grâce à l'EDF
+% Loop filling variables Time and Time ID starting with first second
+%extracted from the EDF file
 for i = 1:header.num_data_records
 
     if s<10
@@ -113,16 +110,16 @@ for i = 1:header.num_data_records
    
 end
 
-% Incorpore les stades à la matrice
+% Integrate sleep substages to the matrix
 %----------------------------------------------------------------------------
 
-%Téléchargement du score pour l'incorporer à la matrice
+%Download score to integrate it into the matrix
 filename = strcat(pathD,sujet,'_hypnogram.txt');
 StadeImported = importStade(filename);
-StadeImported{end+1,1}=StadeImported{end,1}; % Il manque souvent un stade à la fin on le rajoute et il est défini comme le même que celui d'avant, souvent de l'éveil
+% The last stage is often missing, add the same than the previous one
+StadeImported{end+1,1}=StadeImported{end,1};
 
-%Stade Importer est une cellule, les stades sont sous forme de texte, cette
-%bloucle permet de les mettre sous la forme de nombre
+%Loop to transform stade into number
 nbrEpoch=height(StadeImported);
 
 StadeNum=zeros(nbrEpoch,1);
@@ -142,9 +139,7 @@ for i_stadeimported = 1:nbrEpoch
         end
 end
 
-%Remplit les variables Stades Et Stades L grace aux stades extrais comme 
-%chaque époque fait 30 secondes, on rempli avec epoch 1 pour 30 secondes
-%puis epoch 2 pour 30 secondes etc...
+% Fill variables Stades and Stades L. One epoch = 30s
 j=1;
     for i_T = 1:lenT
         Epoch(i_T,1)=j;
@@ -156,41 +151,40 @@ j=1;
         end
     end
     
-% Incorpore les évenements à la matrice depuis le fichier évement
+% Integrate events into the matrix
 %----------------------------------------------------------------------------
 filename = strcat(pathD,sujet,'_evenementsscores.csv');
 ScoredEvents = importfileEvent(filename);
 
 Text={'1';'2';'3';'4'};
-nbrevent=length(Text); % Nombre d'evenements possibles
+nbrevent=length(Text); % Nb of events
 
-Mat01      = {N1;Start;End;Ball}; %Matice qui contient un 1 si il y a un evement à cette seconde
+% Place a 1 at the corresponding second if there an event
+Mat01      = {N1;Start;End;Ball}; 
 
 Duration   = zeros(lenT,nbrevent); % Duration of event ?
 
 Evenements =struct('Text',Text,'Mat01',Mat01);
 
-%Là il faut traduire les evenements en 0 et 1 dans chaques catégories 
+% Place events into categories
 for i_se=1:height(ScoredEvents)
     
-    i_time=find(strcmp(ScoredEvents.Time{i_se,1},Time)); % Trouve à quelle seconde s'applique l'evenement
+    i_time=find(strcmp(ScoredEvents.Time{i_se,1},Time)); % Which second is the event
 
-    for i_evt=1:nbrevent  % cherche quel evenement c'est
-        if sum(ismember(ScoredEvents.Event{i_se,1},Evenements(i_evt).Text))==1 %Cherche  
+    for i_evt=1:nbrevent  % Search which event it is
+        if sum(ismember(ScoredEvents.Event{i_se,1},Evenements(i_evt).Text))==1 
             Evenements(i_evt).Mat01(i_time,1)=Evenements(i_evt).Mat01(i_time,1)+1;
 
             D=ScoredEvents.Duree{i_se,1};
-            % Sachant que dans la matrice il y a des durée en seconde : 0.1
-            % ou en millisecondes il faut prendre différement les deux cas
-            % c'est ce que fait la commande en dessous
+            % Consider whether the duration is in ms or s
             if length(ScoredEvents.Duree{i_se,1})==5 
                 Dnum=str2double(D(1,end-1:end));
             else
                 Dnum=str2double(D(1,end-3:end));
             end
 
-
-            if Dnum > 1.5 && i_evt ~= 2 && i_evt ~= 3  % Si un évenement dure plus qu'une seconde on le marque sur les secondes d'après
+% If an event lasts more than one second, put it on the following second
+            if Dnum > 1.5 && i_evt ~= 2 && i_evt ~= 3
                 for i_d = 1:round(Dnum)-1
                     Evenements(i_evt).Mat01(i_time+i_d,1)=1; 
                 end
