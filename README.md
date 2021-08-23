@@ -3,7 +3,7 @@
 This README presents the primary scripts that were used to analyze the data and generate the figures in the study "Sleep onset is a creative sweet spot"
 These scripts are located in the GitHub repository "Edison_scripts" () in the subfolder Core_Scripts_Article"
 All raw data (EEG and behavioral) are available at the following link:
-https://osf.io/dkbw7/?view_only=19a6f2d822234f84a8675073173d065e
+https://osf.io/dkbw7
 
 There are several main steps: 
 
