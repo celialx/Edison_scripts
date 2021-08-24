@@ -1,6 +1,6 @@
 # Edison_scripts
 
-https://zenodo.org/badge/317621189.svg
+https://zenodo.org/badge/latestdoi/317621189
 
 
 This README presents the primary scripts that were used to analyze the data and generate the figures in the study "Sleep onset is a creative sweet spot"
