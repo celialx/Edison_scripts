@@ -1,7 +1,6 @@
 # Edison_scripts
 
-https://zenodo.org/badge/latestdoi/317621189
-
+[![DOI](https://zenodo.org/badge/317621189.svg)](https://zenodo.org/badge/latestdoi/317621189)
 
 This README presents the primary scripts that were used to analyze the data and generate the figures in the study "Sleep onset is a creative sweet spot"
 These scripts are located in the GitHub repository "Edison_scripts" in the subfolder Core_Scripts_Article".
@@ -45,6 +44,7 @@ Dependencies include:
 These scripts run from the EDF files (available on OSF in the component "Raw EEG (EDF)"), the T matrices (see point 1 and component "T matrix (scoring)") and the behavioural table (component "Tables"). Path will need to be edited to match your local machine.  
 
 Statistics and models are performed by the script "LSedison_LMEs_Pow_v2_submitted.Rmd" for R. Dependencies are listed at the beginning of the script. The script uses the table Clean_Data_SS_Pow_submitted.txt (created by LSedison_TF_byEpoch_vFigure_submitted.m but available on OSF, component "Tables"). 
+
 
 
 
