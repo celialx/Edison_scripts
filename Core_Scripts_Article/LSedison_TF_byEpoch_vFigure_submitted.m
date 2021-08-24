@@ -27,6 +27,7 @@ ColorsGroup=[93 175 117;
     133 189 181;
     67 115 128]/256;
 
+addpath('../TF')
 ColorsSolver=[196 146 46 ; 177 68 22]/256;
 % % Wake = 55 179 111
 % % N1 = 115 191 181
@@ -329,7 +330,7 @@ for nS=1:length(all_Subds)
 end
 All_Conds2=double(All_Conds~=1);
 All_Conds2(find(isnan(All_Conds)))=nan;
-writetable(data_clean,'../Edison_Tables/Clean_Data_SS_Pow.txt');
+writetable(data_clean,'../Edison_Tables/Clean_Data_SS_Pow_submitted.txt');
 
 
 %%

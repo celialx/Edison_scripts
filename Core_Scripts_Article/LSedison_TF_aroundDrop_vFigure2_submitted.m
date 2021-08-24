@@ -14,6 +14,8 @@ addpath(genpath(path_LSCPtools));
 data_path='/Users/tand0009/Data/LS_Edison/EDF_fixed';
 files=dir([data_path filesep '*.edf']);
 
+addpath('../TF')
+
 ColorsGroup=[93 175 117;
     133 189 181;
     67 115 128]/256;
