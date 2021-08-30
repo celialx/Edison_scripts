@@ -1,0 +1,60 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(data.table)
+library(JWileymisc)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+
+### add Theta+Delta
+### résidus corrélation
+
+data <- read.table("/Users/thandrillon/WorkGit/projects/inprogress/Edison_scripts/Spatial_Insight/Insight_Data_clean_Pow.txt", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+data$SleepGroup<-as.factor(data$SleepGroup)
+data$SleepGroup<-relevel(data$SleepGroup,"0")
+offset_correction<-3
+data$PowDelta<-data$PowDelta+offset_correction
+data$PowTheta<-data$PowTheta+offset_correction
+data$PowAlpha<-data$PowAlpha+offset_correction
+data$PowAlphaTheta<-data$PowAlpha/(data$PowTheta)
+
+data$zPowAlpha<-(data$PowAlpha-mean(data$PowAlpha,na.rm=TRUE))/sd(data$PowAlpha,na.rm=TRUE)
+data$zPowAlphaSq<-(data$zPowAlpha)^2
+
+data$zPowDelta<-(data$PowDelta-mean(data$PowDelta,na.rm=TRUE))/sd(data$PowDelta,na.rm=TRUE)
+data$zPowDeltaSq<-(data$zPowDelta)^2
+
+data$zPowTheta<-(data$PowTheta-mean(data$PowTheta,na.rm=TRUE))/sd(data$PowTheta,na.rm=TRUE)
+data$zPowThetaSq<-(data$zPowTheta)^2
+
+data$zPowAlphaTheta<-(data$PowAlphaTheta-mean(data$PowAlphaTheta,na.rm=TRUE))/sd(data$PowAlphaTheta,na.rm=TRUE)
+data$zPowAlphaThetaSq<-(data$zPowAlphaTheta)^2
+
+lm0 <- glm(Corrprenotpost ~ 1, data = data)
+lm1 <- glm(Corrprenotpost ~ 1 + SleepGroup, data = data)
+lm2 <- glm(Corrprenotpost ~ 1 + SleepGroup + PowAlphaTheta, data = data)
+lm3 <- glm(Corrprenotpost ~ 1 + SleepGroup * PowAlphaTheta  , data = data)
+#lm4 <- glm(Corrprenotpost ~ 1 + SleepGroup + PowAlphaTheta + PowDelta +  + PowAlpha, data = data)
+#lm5 <- glm(Corrprenotpost ~ 1 + SleepGroup + PowAlphaTheta + PowDelta +  + PowAlpha + PowTheta, data = data)
+
+anova(lm0,lm1,lm2,lm3,test="F")
+summary(lm2)
+anova(lm2,test="F")
+
+emmeans(lm1, pairwise~SleepGroup)
+
+lm2b <- glm(Corrprenotpost ~ 1 + SleepGroup + zPowAlphaTheta, data = data)
+lm3b <- glm(Corrprenotpost ~ 1 + SleepGroup + zPowAlphaTheta, data = data)
+lm4b <- glm(Corrprenotpost ~ 1 + SleepGroup + zPowAlphaTheta + zPowAlphaThetaSq, data = data)
+anova(lm0,lm1,lm2b,lm3b,lm4b,test="Chi")
+
+```
+
+```

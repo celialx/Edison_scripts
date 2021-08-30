@@ -37,7 +37,7 @@ ParamExport_SubID=cell(0,0);
 ParamExport=[];
 
 all_maxAbs=[];
-    threshArt           = 500;
+threshArt           = 500;
 
 for nF=1:length(files)
     %%% Select subject and file
@@ -57,7 +57,7 @@ for nF=1:length(files)
     
     oridata=ft_read_data([Folder_Name filesep  File_Name]);
     hdr=ft_read_header([Folder_Name filesep  File_Name]);
-
+    
     %%% Import data, select for breaks and cut for 30s epochs
     cfg=[];
     cfg.trialfun        = 'LSinsight_trialfun_break_contepochs';
@@ -71,11 +71,11 @@ for nF=1:length(files)
     hdr                 = ft_read_header([Folder_Name filesep File_Name]);
     
     Start = find(T.Start(:,1)); Start = Start(1);
-End = find(T.End(:,1)); End = End(1);
-Beg_Task=(T.Epoch(Start)-1)*30*hdr.Fs+1;
-End_Task=T.Epoch(End)*30*hdr.Fs;
-%         figure; plot(oridata(3,Beg_Task:End_Task)); format_fig; title(File_Name)
-%     pause; close(gcf);
+    End = find(T.End(:,1)); End = End(1);
+    Beg_Task=(T.Epoch(Start)-1)*30*hdr.Fs+1;
+    End_Task=T.Epoch(End)*30*hdr.Fs;
+    %         figure; plot(oridata(3,Beg_Task:End_Task)); format_fig; title(File_Name)
+    %     pause; close(gcf);
     
     ParamExport=[ParamExport ; hdr.orig.PhysMin(1:3) hdr.orig.PhysMax(1:3)];
     ParamExport_SubID=[ParamExport_SubID ; {SubdID}];
@@ -83,7 +83,7 @@ End_Task=T.Epoch(End)*30*hdr.Fs;
     maxAbs = [];
     for k=1:length(data.trial)
         maxAbs(k,:)     = max(abs(data.trial{k}),[],2);
-%         figure; plot(data.trial{k}(3,:)); pause; close(gcf);
+        %         figure; plot(data.trial{k}(3,:)); pause; close(gcf);
     end
     all_maxAbs=[all_maxAbs ; maxAbs];
     % Fait uniquement sur la troisième électrode
@@ -167,7 +167,7 @@ End_Task=T.Epoch(End)*30*hdr.Fs;
 end
 
 %%
-Freqs=[1 3.6; 4 7; 8 12; 20 30];
+Freqs=[1 4; 4 7; 8 12; 20 30];
 
 % Behav data;
 load([Behav_Path 'All_Data_clean']);
@@ -194,6 +194,7 @@ for nS=1:length(all_Subds)
     Data.PowTheta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(2,1) & freqs<=Freqs(2,2)),3));
     Data.PowAlpha(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(3,1) & freqs<=Freqs(3,2)),3));
     Data.PowBeta(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(4,1) & freqs<=Freqs(4,2)),3));
+    Data.PowSlow(this_line)=squeeze(nanmean(Pow_allE(nS,3,freqs>=Freqs(1,1) & freqs<=Freqs(2,2)),3));
     %     Data.RatioAT(this_line) = Data.PowAlpha(this_line)/Data.PowTheta(this_line);
     
     if isempty(double(Data.SleepGroup(this_line)))
@@ -207,6 +208,9 @@ end
 
 All_Conds2=double(All_Conds~=1);
 All_Conds2(find(isnan(All_Conds)))=nan;
+
+writetable(Data,'Insight_Data_clean_Pow.txt');
+
 
 %%
 figure; hold on;
@@ -250,10 +254,10 @@ if redo
     totperm=100;
     [realpos_lin realneg_lin]=get_cluster_permutation_lm(zscore(temp_power),group(:,2),{'Power','Mem'},'Power~1+Mem',0.05,0.1,totperm,faxis);
     [realpos_quad realneg_quad]=get_cluster_permutation_lm(zscore(temp_power).^2,group(:,2),{'Power','Mem'},'Power~1+Mem',0.05,0.1,totperm,faxis);
-
-%     save('result_clusterperm_Insight2_onfreq_LM','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
+    
+    %     save('result_clusterperm_Insight2_onfreq_LM','realpos_lin','realneg_lin','realpos_quad','realneg_quad', 'freqs')
 else
-%     load('result_clusterperm_Insight2_onfreq_LM')
+    %     load('result_clusterperm_Insight2_onfreq_LM')
 end
 
 for nF=1:length(faxis)
@@ -271,9 +275,9 @@ hold on;
 for nCond=1:2
     for nCond2=1:2
         if nCond2==1
-        temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:));
+            temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:));
         else
-        temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:));
+            temp_toplot=squeeze(temp_power(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:));
         end
         if nCond2==1
             plot(myfreqs,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
@@ -312,9 +316,9 @@ xlim([1 30])
 % ylim([-1 4])
 
 hold on;
-scatter(myfreqs(find(realpos_lin{1}.clusters)),-1+0.2*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realpos_lin{1}.clusters)),-1+0.2*ones(1,length(find(realpos_lin{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
+% scatter(myfreqs(find(realpos_lin{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_lin{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realpos_lin{3}.clusters)),-2+0.2*ones(1,length(find(realpos_lin{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 % scatter(myfreqs(find(realneg_lin{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_lin{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
 % scatter(myfreqs(find(realneg_lin{2}.clusters)),-1.7+0.2*ones(1,length(find(realneg_lin{2}.clusters))),'Marker','s','MarkerEdgeColor','k','MarkerFaceColor','k');
@@ -327,9 +331,9 @@ hold on;
 for nCond=1:2
     for nCond2=1:2
         if nCond2==1
-        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:);
+            temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))<median(All_Memory(~isnan(All_Conds))),:);
         else
-        temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:);
+            temp_toplot=temp_power_zscore(ismember(All_Conds(~isnan(All_Conds)),myConds{nCond}) & All_Memory(~isnan(All_Conds))>median(All_Memory(~isnan(All_Conds))),:);
         end
         if nCond2==1
             plot(myfreqs,nanmean(temp_toplot),'Color',ColorsGroup(nCond,:),'LineWidth',3,'LineStyle','--');
@@ -344,9 +348,9 @@ xlim([1 30])
 % ylim([-1 4])
 
 hold on;
-scatter(myfreqs(find(realpos_quad{1}.clusters)),-1+0.2*ones(1,length(find(realpos_quad{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
-scatter(myfreqs(find(realpos_quad{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_quad{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
-scatter(myfreqs(find(realpos_quad{3}.clusters)),-2+0.2*ones(1,length(find(realpos_quad{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
+% scatter(myfreqs(find(realpos_quad{1}.clusters)),-1+0.2*ones(1,length(find(realpos_quad{1}.clusters))),'Marker','o','MarkerEdgeColor','b','MarkerFaceColor','b');
+% scatter(myfreqs(find(realpos_quad{2}.clusters)),-1.5+0.2*ones(1,length(find(realpos_quad{2}.clusters))),'Marker','o','MarkerEdgeColor','k','MarkerFaceColor','k');
+% scatter(myfreqs(find(realpos_quad{3}.clusters)),-2+0.2*ones(1,length(find(realpos_quad{3}.clusters))),'Marker','o','MarkerEdgeColor','r','MarkerFaceColor','r');
 
 
 % scatter(myfreqs(find(realneg_quad{1}.clusters)),-1.2+0.2*ones(1,length(find(realneg_quad{1}.clusters))),'Marker','s','MarkerEdgeColor','b','MarkerFaceColor','b');
@@ -482,11 +486,11 @@ for nFreq=1:2
             %         temp_toplot=(temp_toplot-repmat(nanmean(temp_toplot,2),1,length(freqs)));
             temp_toplot=mean(temp_toplot(:,freqs>=Freqs(nFreq,1) & freqs<=Freqs(nFreq,2)),2);
             temp_toplot=sqrt(nanzscore(temp_toplot).^2);
-if nCond2==1
-    temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory<=nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
-else
-            temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory>nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
-end
+            if nCond2==1
+                temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory<=nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+            else
+                temp_toplot=temp_toplot(ismember(All_Conds,myConds{nCond}) & All_Memory>nanmedian(All_Memory(ismember(All_Conds,myConds{nCond}))),:);
+            end
             %%%%% Plot
             hold on;
             Pos=2*nCond2+0.2*(2*nCond-3); data=temp_toplot; widthLine=2; widthBar=1.2; sizeDot=400; markerType='o';
@@ -517,25 +521,31 @@ end
 % export_fig([pwd filesep '..' filesep 'FigMat' filesep 'Edison_TF_InsightEffect_DotPlot.png'],'-r 300')
 
 %%
+Data2=Data;
+Data2.PowDelta=Data2.PowDelta+3;
+Data2.PowTheta=Data2.PowTheta+3;
+Data2.PowAlpha=Data2.PowAlpha+3;
+Data2.PowAlphaTheta=Data2.PowAlpha./Data2.PowTheta;
 figure;
 stepbin=33;
 clear bin_*
-titlePlots={'Alpha','Beta'};
+titlePlots={'PowDelta','PowAlphaTheta'};
 set(gcf,'Position',[462     1   348   804]);
 for nplot=1:2
     subplot(2,1,nplot);
     hold on;
     format_fig;
-    if nplot==1
-        tempX=nanzscore(Data.PowAlpha);
-    elseif nplot==2
-        tempX=nanzscore(Data.PowBeta);
-%     elseif nplot ==3
-%         tempX=nanzscore(Data.PowBeta);
-        
-    end
-    %     tempY=Data.RT_fromAha-Data.RT_beforeAha;
-    tempY=Data.Corrprenotpost;
+%     if nplot==1
+%         tempX=nanzscore(Data2.PowAlpha);
+%     elseif nplot==2
+%         tempX=nanzscore(Data2.PowBeta);
+%         %     elseif nplot ==3
+%         %         tempX=nanzscore(Data2.PowBeta);
+%         
+%     end
+    tempX=Data2.(titlePlots{nplot});
+    %     tempY=Data2.RT_fromAha-Data2.RT_beforeAha;
+    tempY=Data2.Corrprenotpost;
     
     bins=prctile(tempX,0:stepbin:100);
     bin_values=[];
@@ -581,4 +591,85 @@ end
 %%
 anovan(nanzscore(Data.PowAlpha).^2,[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full','continuous',2);
 anovan(nanzscore(Data.PowBeta).^2,[Data.SleepNap Data.Corrprenotpost],'varnames',{'Sleep','Insight'},'model','full','continuous',2);
+
+
+%%
+offset_correction=3;
+figure;
+hdl=[];
+[stats, hdl(1)]=simpleCorPlot((Data.PowAlpha(Data.SleepGroup=='0')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='0')+offset_correction),Data.Corrprenotpost(Data.SleepGroup=='0'),{'o','r','r',72},'spearman');
+hold on;
+[stats,  hdl(2)]=simpleCorPlot((Data.PowAlpha(Data.SleepGroup=='1')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='1')+offset_correction),Data.Corrprenotpost(Data.SleepGroup=='1'),{'o','g','g',72},'spearman');
+[stats,  hdl(3)]=simpleCorPlot((Data.PowAlpha(Data.SleepGroup=='2')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='2')+offset_correction),Data.Corrprenotpost(Data.SleepGroup=='2'),{'o','b','b',72},'spearman');
+
+ylabel('Forgetting'); xlabel('Alpha/Theta');
+legend(hdl,{'Wk','N1','N2'});
+%%
+figure;
+subplot(1,2,1);
+simpleBarPlot(1,(Data.PowAlpha(Data.SleepGroup=='0')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='0')+offset_correction),'r',0.8,'k',[],3);
+hold on;
+simpleBarPlot(2,(Data.PowAlpha(Data.SleepGroup=='1')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='1')+offset_correction),'g',0.8,'k',[],3);
+simpleBarPlot(3,(Data.PowAlpha(Data.SleepGroup=='2')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='2')+offset_correction),'b',0.8,'k',[],3);
+format_fig;
+set(gca,'XTick',1:3,'XTickLabel',{'Wk','N1','N2'});
+ylabel('Alpha/Theta');
+
+subplot(1,2,2);
+simpleBarPlot(1,(Data.Corrprenotpost(Data.SleepGroup=='0')+offset_correction),'r',0.8,'k',[],3);
+hold on;
+simpleBarPlot(2,(Data.Corrprenotpost(Data.SleepGroup=='1')+offset_correction),'g',0.8,'k',[],3);
+simpleBarPlot(3,(Data.Corrprenotpost(Data.SleepGroup=='2')+offset_correction),'b',0.8,'k',[],3);
+format_fig;
+set(gca,'XTick',1:3,'XTickLabel',{'Wk','N1','N2'});
+ylabel('Forgetting');
+
+%%
+figure;
+hdl=[];
+[stats, hdl(1)]=simpleCorPlot(zscore((Data.PowAlpha(Data.SleepGroup=='0')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='0')+offset_correction)),zscore(Data.Corrprenotpost(Data.SleepGroup=='0')),{'o','r','r',72},'spearman');
+hold on;
+[stats,  hdl(2)]=simpleCorPlot(zscore((Data.PowAlpha(Data.SleepGroup=='1')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='1')+offset_correction)),zscore(Data.Corrprenotpost(Data.SleepGroup=='1')),{'o','g','g',72},'spearman');
+[stats,  hdl(3)]=simpleCorPlot(zscore((Data.PowAlpha(Data.SleepGroup=='2')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='2')+offset_correction)),zscore(Data.Corrprenotpost(Data.SleepGroup=='2')),{'o','b','b',72},'spearman');
+
+ylabel('Forgetting'); xlabel('Alpha/Theta');
+legend(hdl,{'Wk','N1','N2'});
+
+%%
+figure;
+hdl=[];
+[stats, hdl(1)]=simpleCorPlot([zscore((Data.PowAlpha(Data.SleepGroup=='1')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='1')+offset_correction)) ; zscore((Data.PowAlpha(Data.SleepGroup=='2')+offset_correction)./(Data.PowTheta(Data.SleepGroup=='2')+offset_correction))],...
+    [zscore(Data.Corrprenotpost(Data.SleepGroup=='1')) ; zscore(Data.Corrprenotpost(Data.SleepGroup=='2'))],{'o','r','r',72},'spearman');
+hold on;
+ylabel('Forgetting'); xlabel('Alpha/Theta');
+format_fig;
+
+%%
+figure;
+subplot(1,3,1);
+simpleBarPlot(1,(Data.PowDelta(Data.SleepGroup=='0')+offset_correction),'r',0.8,'k',[],3);
+hold on;
+simpleBarPlot(2,(Data.PowDelta(Data.SleepGroup=='1')+offset_correction),'g',0.8,'k',[],3);
+simpleBarPlot(3,(Data.PowDelta(Data.SleepGroup=='2')+offset_correction),'b',0.8,'k',[],3);
+format_fig;
+set(gca,'XTick',1:3,'XTickLabel',{'Wk','N1','N2'});
+ylabel('Delta');
+
+subplot(1,3,2);
+simpleBarPlot(1,(Data.PowTheta(Data.SleepGroup=='0')+offset_correction),'r',0.8,'k',[],3);
+hold on;
+simpleBarPlot(2,(Data.PowTheta(Data.SleepGroup=='1')+offset_correction),'g',0.8,'k',[],3);
+simpleBarPlot(3,(Data.PowTheta(Data.SleepGroup=='2')+offset_correction),'b',0.8,'k',[],3);
+format_fig;
+set(gca,'XTick',1:3,'XTickLabel',{'Wk','N1','N2'});
+ylabel('Theta');
+
+subplot(1,3,3);
+simpleBarPlot(1,(Data.PowAlpha(Data.SleepGroup=='0')+offset_correction),'r',0.8,'k',[],3);
+hold on;
+simpleBarPlot(2,(Data.PowAlpha(Data.SleepGroup=='1')+offset_correction),'g',0.8,'k',[],3);
+simpleBarPlot(3,(Data.PowAlpha(Data.SleepGroup=='2')+offset_correction),'b',0.8,'k',[],3);
+format_fig;
+set(gca,'XTick',1:3,'XTickLabel',{'Wk','N1','N2'});
+ylabel('Alpha');
 
